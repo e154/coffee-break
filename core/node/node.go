@@ -2,24 +2,20 @@ package node
 
 import (
     "github.com/lonnc/golang-nw"
-    "fmt"
-    "net/http"
 )
-
-const listenAddr = "localhost:4000"
-
-func handler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "Hello, web")
-}
 
 func Run() {
 
-    http.HandleFunc("/", handler)
-    err := http.ListenAndServe(listenAddr, nil)
+    // Create a link back to node-webkit using the environment variable
+    // populated by golang-nw's node-webkit code
+    nodeWebkit, err := nw.New()
     if err != nil {
-
+        panic(err)
     }
 
-    nodeWebkit, _ := nw.New()
-    nodeWebkit.ListenAndServe(handler)
+    // Pick a random localhost port, start listening for http requests using default handler
+    // and send a message back to node-webkit to redirect
+    if err := nodeWebkit.ListenAndServe(nil); err != nil {
+        panic(err)
+    }
 }

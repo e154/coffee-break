@@ -20,6 +20,5 @@ gulp.task('build_lib_js', function() {
         .pipe(jsFilter)
         .pipe(concat(conf.filename))
         //.pipe(uglify())
-        .pipe(gulp.dest(conf.dest))
-        .pipe(jsFilter.restore());
+        .pipe(gulp.dest(conf.dest));
 });

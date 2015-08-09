@@ -1,5 +1,7 @@
 package main
 
+import "./core"
+
 func main() {
-    Initial()
+    core.Run()
 }

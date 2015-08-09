@@ -7,30 +7,38 @@ module.exports = {
         filename: 'lib.min.js',
         paths: {
             bowerDirectory: source + '/bower_components',
-            bowerrc: '.bowerrc',
-            bowerJson: 'bower.json'
+            bowerrc: source + '/.bowerrc',
+            bowerJson: source + '/bower.json'
         },
-        dest: pub + '/js'
+        dest: source + '/js'
     },
     build_coffee_js: {
         filename: 'app.min.js',
         source: [
-            "app/assets/javascripts/modules.coffee",
-            "app/assets/javascripts/language.coffee",
-            "app/assets/javascripts/routes.coffee",
-            "app/assets/javascripts/setup.coffee",
-            "app/assets/javascripts/fixes.coffee",
-            "app/assets/javascripts/auth.coffee",
-            "app/assets/javascripts/stream.coffee",
-            "app/assets/javascripts/services/**/*.coffee",
-            "app/assets/javascripts/animations/**/*.coffee",
-            "app/assets/javascripts/constants/**/*.coffee",
-            "app/assets/javascripts/directives/**/*.coffee",
-            "app/assets/javascripts/filters/**/*.coffee",
-            "app/assets/javascripts/helpers/**/*.coffee",
-            "app/assets/javascripts/controllers/**/*.coffee"
+            source + "/app/app.coffee",
+            source + "/app/services/**/*.coffee",
+            source + "/app/directives/**/*.coffee",
+            source + "/app/controllers/**/*.coffee"
         ],
-        watch: "app/assets/javascripts/**/*.coffee",
-        dest: pub + '/js'
+        watch: source + "/app/**/*.coffee",
+        dest: source + '/js'
+    },
+    build_lib_css: {
+        filename: 'lib.min.css',
+        paths: {
+            bowerDirectory: source + '/bower_components',
+            bowerrc: source + '/.bowerrc',
+            bowerJson: source + '/bower.json'
+        },
+        dest: source + '/css'
+    },
+    build_less: {
+        filename: 'app.min.css',
+        source: [
+            source + '/less/bootstrap.less',
+            source + '/less/bootstrap-theme.less'
+        ],
+        dest: source + '/css',
+        watch: source + '/less/**/*.less'
     }
 };

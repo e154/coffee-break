@@ -9,13 +9,8 @@ gulp.task('default', function(cb) {
     runSequence(
         'build_lib_js',
         'build_coffee_js',
+        'build_lib_css',
+        'build_less',
         'watch'
-    );
-});
-
-gulp.task('prod', function(cb) {
-    runSequence(
-        'build_lib_js',
-        'build_coffee_js'
     );
 });

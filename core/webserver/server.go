@@ -1,4 +1,4 @@
-package server
+package webserver
 
 import (
     "net/http"
@@ -30,6 +30,7 @@ func Run() {
     http.HandleFunc("/js/", fileHandler)
     http.HandleFunc("/css/", fileHandler)
     http.HandleFunc("/images/", fileHandler)
+    http.HandleFunc("/templates/", fileHandler)
 
     if err := http.ListenAndServe(":8080", nil); err != nil {
         log.Fatal("ListenAndServe:", err)

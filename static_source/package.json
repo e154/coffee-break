@@ -2,13 +2,13 @@
   "name": "nw-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.html",
+  "main": "",
   "scripts": {
     "test": "echo \"Ошибка: тест не задан\" && exit 1"
   },
   "author": "",
   "window": {
-    "toolbar": false,
+    "toolbar": true,
     "width": 800,
     "height": 500
   },

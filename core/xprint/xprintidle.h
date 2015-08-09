@@ -1,4 +1,4 @@
-/** Copyright (C), DeltaSync Studios, 2010-2015. All rights reserved.
+/** Copyright (C), DeltaSync Studios, 2010-2014. All rights reserved.
  * ------------------------------------------------------------------
  * File name:   xprintidle.h
  * Version:     v1.00
@@ -31,7 +31,8 @@
 // 2 screen saver extension not supported
 // 3 couldn't query screen saver info
 
-int getIdle( unsigned long *idle );
+Display* getDisplay();
+int getIdle( unsigned long *idle, Display *display );
 unsigned long workaroundCreepyXServer(Display *dpy, unsigned long _idleTime );
 
 

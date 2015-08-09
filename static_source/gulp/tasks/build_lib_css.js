@@ -20,6 +20,5 @@ gulp.task('build_lib_css', function() {
         .pipe(cssFilter)
         //.pipe(csso()) // минимизируем css
         .pipe(concat(conf.filename))
-        .pipe(gulp.dest(conf.dest)) // записываем css
-        .pipe(cssFilter.restore());
+        .pipe(gulp.dest(conf.dest)); // записываем css
 });
