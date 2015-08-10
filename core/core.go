@@ -16,40 +16,13 @@ import (
     "./webserver"
 )
 
-func up_time() {
-    // set up time
-    UP_TIME = time.Now().Sub(START_TIME)
-}
-
 var (
-    START_TIME time.Time
-    UP_TIME time.Duration
-    IDLE_TIME time.Duration
-    LAST_IDLE_TIME time.Duration
-    WORK_TIME time.Duration
-    IDLE_CONST time.Duration = 15 * time.Minute
-    WORK_CONST time.Duration = 45 * time.Minute
-    PROTECT_INTERVAR time.Duration = 30 * time.Minute
-    ONE_TICK time.Duration = 1 * time.Second
-    STAGE string = "work" // work|idle|signal
-    HOMEDIR string
-    IDLE_WORK_TITLE string
-    IDLE_WORK_BODY string
-    IDLE_WORK_IMAGE string
-    WORK_IDLE_TITLE string
-    WORK_IDLE_BODY string
-    WORK_IDLE_IMAGE string
-    UNFINISHED_IDLE_TITLE string
-    UNFINISHED_IDLE_BODY string
-    UNFINISHED_IDLE_IMAGE string
     display *C.Display
-    PAUSE bool
     isWork bool
-    SIGNAL_COUNT int
-    TOTAL_IDLE time.Duration
-    TOTAL_WORK time.Duration
-    TMP_IDLE_TIMER time.Duration
-    PORT int = 8080
+    signal_count int
+    last_idle_time time.Duration
+    tmp_idle_timer time.Duration
+    settings *Settings
 )
 
 func idle_time() {
@@ -79,106 +52,112 @@ func idle_time() {
         fmt.Printf("error: %s\n", err_text)
         return
     }
-    LAST_IDLE_TIME = IDLE_TIME
-    IDLE_TIME = time.Duration(*idle) * time.Millisecond
+    last_idle_time = settings.Idle
+    settings.Idle = time.Duration(*idle) * time.Millisecond
 }
 
 func fsm() {
 
-    isWork = IDLE_TIME < time.Second
-    protected := IDLE_TIME < PROTECT_INTERVAR
+    isWork = settings.Idle < time.Second
+    protected := settings.Idle < settings.Protect
 
-    if PAUSE {
-        WORK_TIME += ONE_TICK
+    if settings.Paused {
+        settings.Work += settings.Tick
         return
     }
 
-    switch STAGE {
+    switch settings.Stage {
         case "work":
-            WORK_TIME += ONE_TICK
-            TOTAL_WORK += ONE_TICK
+            settings.Work += settings.Tick
+            settings.TotalWork += settings.Tick
             if isWork {
-                if WORK_TIME > WORK_CONST {
+                if settings.Work > settings.WorkConst {
                     send_signal("work_idle")
                 }
 
             } else {
 
                 if !protected {
-                    STAGE = "idle"
+                    settings.Stage = "idle"
                 }
             }
         case "idle":
-            TMP_IDLE_TIMER += ONE_TICK
-            TOTAL_IDLE += ONE_TICK
+            tmp_idle_timer += settings.Tick
+            settings.TotalIdle += settings.Tick
             if !isWork {
-                if IDLE_TIME > IDLE_CONST {
+                if settings.Idle > settings.IdleConst {
                     send_signal("idle_work")
                 }
 
             } else {
-                if TMP_IDLE_TIMER < IDLE_CONST {
+                if tmp_idle_timer < settings.IdleConst {
                     send_signal("unfinished_idle")
                 } else {
-                    TMP_IDLE_TIMER = 0
-                    WORK_TIME = 0
-                    STAGE = "work"
+                    tmp_idle_timer = 0
+                    settings.Work = 0
+                    settings.Stage = "work"
                 }
             }
     }
 
-//    fmt.Printf("\n")
-//    fmt.Printf("IDLE_TIME: %v\n", IDLE_TIME)
-//    fmt.Printf("LAST_IDLE_TIME: %v\n", LAST_IDLE_TIME)
-//    fmt.Printf("PROTECT_INTERVAR: %v\n", PROTECT_INTERVAR)
-//    fmt.Printf("protected: %t\n", protected)
-//    fmt.Printf("STAGE: %s\n", STAGE)
-//    fmt.Printf("isWork: %t\n", isWork)
+    fmt.Printf("\n")
+    fmt.Printf("settings.Idle: %v\n", settings.Idle)
+    fmt.Printf("last_idle_time: %v\n", last_idle_time)
+    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
+    fmt.Printf("protected: %t\n", protected)
+    fmt.Printf("settings.Stage: %s\n", settings.Stage)
+    fmt.Printf("isWork: %t\n", isWork)
+    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
+    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
 }
 
 func strConverter(in string) (out string) {
 
-    out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", IDLE_TIME), -1)
-    out = strings.Replace(out, "{work_time}", fmt.Sprintf("%v", WORK_TIME), -1)
-    out = strings.Replace(out, "{idle_const}", fmt.Sprintf("%v", IDLE_CONST), -1)
+    out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", settings.Idle), -1)
+    out = strings.Replace(out, "{work_time}", fmt.Sprintf("%v", settings.Work), -1)
+    out = strings.Replace(out, "{idle}", fmt.Sprintf("%v", settings.IdleConst), -1)
     return
 }
 
 func send_signal(stage string) {
 
-    if SIGNAL_COUNT > 10 {
-        SIGNAL_COUNT = 0
+    if signal_count > 10 {
+        signal_count = 0
     } else {
-        SIGNAL_COUNT++
+        signal_count++
         return
     }
 
     switch stage {
         case "idle_work":
-            go notify.Show(strConverter(IDLE_WORK_TITLE), strConverter(IDLE_WORK_BODY), IDLE_WORK_IMAGE)
+            go notify.Show(strConverter(settings.Idle_work_title), strConverter(settings.Idle_work_body), strConverter(settings.Idle_work_image))
 
         case "work_idle":
-            go notify.Show(strConverter(WORK_IDLE_TITLE), strConverter(WORK_IDLE_BODY), WORK_IDLE_IMAGE)
+            go notify.Show(strConverter(settings.Work_idle_title), strConverter(settings.Work_idle_body), strConverter(settings.Work_idle_image))
 
         case "unfinished_idle":
-            go notify.Show(strConverter(UNFINISHED_IDLE_TITLE), strConverter(UNFINISHED_IDLE_BODY), UNFINISHED_IDLE_IMAGE)
+            go notify.Show(strConverter(settings.Unfinished_idle_title), strConverter(settings.Unfinished_idle_body), strConverter(settings.Unfinished_idle_image))
     }
 }
 
 func Run() {
 
+    // init settings
+    settings = SettingsPtr()
+    settings.Init()
+    settings.Load()
+
     // set start time
-    START_TIME = time.Now()
     fmt.Printf("running ...\n")
-    fmt.Printf("current time %s\n", START_TIME)
+    fmt.Printf("current time %s\n", settings.StartTime)
 
     // timer
     go func() {
-        ticker := time.Tick(ONE_TICK)
+        ticker := time.Tick(settings.Tick)
         for {
             select {
             case <-ticker:
-                go up_time()
+                settings.UpTime = time.Now().Sub(settings.StartTime)
                 go idle_time()
                 go fsm()
             }
