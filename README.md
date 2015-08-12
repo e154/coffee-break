@@ -1,8 +1,7 @@
 init
 ====
 
-
-apt-get install libnotify-dev libgdk-pixbuf
+apt-get install libnotify-dev libgdk-pixbuf libopenal-dev
 
 
 ```bash

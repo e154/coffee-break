@@ -47,11 +47,9 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
-
-
-45minut
 static_source/bower_components
 static_source/node_modules
 static_source/js
 node_modules
 static_source/css
+watcher

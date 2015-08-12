@@ -3,7 +3,7 @@
 angular
   .module('appControllers')
   .controller 'baseCtrl', ['$scope'
-  ($scope) ->
-    vm = this
+    ($scope) ->
+      vm = this
 
   ]

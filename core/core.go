@@ -12,8 +12,8 @@ import (
     "time"
     "./notify"
     "strings"
-    "./node"
     "./webserver"
+    "./audio"
 )
 
 var (
@@ -23,6 +23,7 @@ var (
     last_idle_time time.Duration
     tmp_idle_timer time.Duration
     settings *Settings
+    player *audio.Player
 )
 
 func idle_time() {
@@ -78,6 +79,7 @@ func fsm() {
             } else {
 
                 if !protected {
+                    settings.Last_stage = settings.Stage
                     settings.Stage = "idle"
                 }
             }
@@ -95,20 +97,23 @@ func fsm() {
                 } else {
                     tmp_idle_timer = 0
                     settings.Work = 0
+                    settings.Last_stage = settings.Stage
                     settings.Stage = "work"
                 }
             }
     }
 
-    fmt.Printf("\n")
-    fmt.Printf("settings.Idle: %v\n", settings.Idle)
-    fmt.Printf("last_idle_time: %v\n", last_idle_time)
-    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
-    fmt.Printf("protected: %t\n", protected)
-    fmt.Printf("settings.Stage: %s\n", settings.Stage)
-    fmt.Printf("isWork: %t\n", isWork)
-    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
-    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
+//    fmt.Printf("settings.Idle: %v\n", settings.Idle)
+//    fmt.Printf("last_idle_time: %v\n", last_idle_time)
+//    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
+//    fmt.Printf("protected: %t\n", protected)
+//    fmt.Printf("settings.Protect: %v\n", settings.Protect)
+//    fmt.Printf("settings.Stage: %s\n", settings.Stage)
+//    fmt.Printf("isWork: %t\n", isWork)
+//    fmt.Printf("Work: %v\n", settings.Work)
+//    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
+//    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
+//    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
 }
 
 func strConverter(in string) (out string) {
@@ -128,6 +133,15 @@ func send_signal(stage string) {
         return
     }
 
+    if settings.Notify_count > settings.Maximum_notify {
+        if settings.Last_stage != settings.Stage {
+            settings.Notify_count = 0
+        }
+        return
+    }
+
+    settings.Notify_count++
+
     switch stage {
         case "idle_work":
             go notify.Show(strConverter(settings.Idle_work_title), strConverter(settings.Idle_work_body), strConverter(settings.Idle_work_image))
@@ -138,6 +152,8 @@ func send_signal(stage string) {
         case "unfinished_idle":
             go notify.Show(strConverter(settings.Unfinished_idle_title), strConverter(settings.Unfinished_idle_body), strConverter(settings.Unfinished_idle_image))
     }
+
+    player.Play()
 }
 
 func Run() {
@@ -147,9 +163,11 @@ func Run() {
     settings.Init()
     settings.Load()
 
-    // set start time
-    fmt.Printf("running ...\n")
-    fmt.Printf("current time %s\n", settings.StartTime)
+    // audio
+    player = audio.PlayerPtr()
+    if settings.Alarm_file != "" {
+        player.File("static_source/audio/" + settings.Alarm_file)
+    }
 
     // timer
     go func() {
@@ -164,8 +182,6 @@ func Run() {
         }
     }()
 
-    webserver.Run()
+    webserver.Run(settings.Webserver_address)
 
-    // node
-    node.Run()
 }

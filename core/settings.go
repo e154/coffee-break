@@ -12,7 +12,7 @@ import (
 
 const (
     CONF_NAME string = "app.conf"
-    PROG_NAME string = ".45minut"
+    APP_NAME string = "watcher"
     permMode os.FileMode = 0666
 )
 
@@ -41,6 +41,7 @@ type Settings struct {
     cfg config.ConfigContainer
     dir string
     Stage string
+    Last_stage string
     Ready bool
     Paused bool
     Idle_work_title string
@@ -52,9 +53,14 @@ type Settings struct {
     Unfinished_idle_title string
     Unfinished_idle_body string
     Unfinished_idle_image string
+    Alarm_file string
+    Maximum_notify int
+    Notify_count int
+    Webserver_address string
 }
 
 func (s *Settings) GetHomeDir() (string, error) {
+    
     if len(s.HomeDir) != 0 {
         return s.HomeDir, nil
     }
@@ -78,7 +84,7 @@ func (s *Settings) Init() *Settings {
     }
 
     s.StartTime = time.Now()
-    s.dir = fmt.Sprintf("%s/%s/", s.HomeDir, PROG_NAME)
+    s.dir = fmt.Sprintf("%s/.%s/", s.HomeDir, APP_NAME)
 
     s.Paused = false
     s.WorkConst = 2700 * time.Second // 45min
@@ -95,20 +101,23 @@ func (s *Settings) Init() *Settings {
     s.Unfinished_idle_title = "Внимание"
     s.Unfinished_idle_body = "{idle} ещё не прошло, иди отдохни, выпей чаю!"
     s.Unfinished_idle_image = ""
+    s.Alarm_file = "aperture_logo_bells_01_01.wav"
+    s.Webserver_address = "0.0.0.0:8080"
+    s.Maximum_notify = 3
 
 //    create app conf dir
     fileList, _ := ioutil.ReadDir(s.HomeDir)
 
     var exist bool
     for _, file := range fileList {
-        if file.Name() == PROG_NAME {
+        if file.Name() == "."+APP_NAME {
             exist = true
             break
         }
     }
 
     if !exist {
-        dir := fmt.Sprintf(`%s/%s`, s.HomeDir, PROG_NAME)
+        dir := fmt.Sprintf(`%s/.%s`, s.HomeDir, APP_NAME)
         fmt.Printf("create dir: %s\n", dir)
         os.MkdirAll(dir, os.ModePerm)
     }
@@ -126,20 +135,27 @@ func (s *Settings) Save() (*Settings, error) {
         ioutil.WriteFile(s.dir + CONF_NAME, []byte{}, permMode)
     }
 
-    cfg, _ := config.NewConfig("ini", "/home/delta54/.45minut/app.conf")
+    cfg, err := config.NewConfig("ini", s.dir + CONF_NAME)
+    if err != nil {
+        return s, err
+    }
+
     cfg.Set("paused", fmt.Sprintf("%t", s.Paused))
     cfg.Set("idle", fmt.Sprintf("%v", s.IdleConst.Seconds()))
     cfg.Set("work", fmt.Sprintf("%v", s.WorkConst.Seconds()))
     cfg.Set("protect", fmt.Sprintf("%v", s.Protect.Seconds()))
-    cfg.Set("idle_work_title", "Внимание")
-    cfg.Set("idle_work_body", "Ты отдыхаешь уже {idle_time} пора приниматся за работу!")
-    cfg.Set("idle_work_image", "")
-    cfg.Set("work_idle_title", "Внимание")
-    cfg.Set("work_idle_body", "Ты работешь уже {work_time}, иди отдохни, выпей чаю!")
-    cfg.Set("work_idle_image", "")
-    cfg.Set("unfinished_idle_title", "Внимание")
-    cfg.Set("unfinished_idle_body", "{idle} ещё не прошло, иди отдохни, выпей чаю!")
-    cfg.Set("unfinished_idle_image", "")
+    cfg.Set("idle_work_title", s.Idle_work_title)
+    cfg.Set("idle_work_body", s.Idle_work_body)
+    cfg.Set("idle_work_image", s.Idle_work_image)
+    cfg.Set("work_idle_title", s.Work_idle_title)
+    cfg.Set("work_idle_body", s.Work_idle_body)
+    cfg.Set("work_idle_image", s.Work_idle_image)
+    cfg.Set("unfinished_idle_title", s.Unfinished_idle_title)
+    cfg.Set("unfinished_idle_body", s.Unfinished_idle_body)
+    cfg.Set("unfinished_idle_image", s.Unfinished_idle_image)
+    cfg.Set("alarm_file", s.Alarm_file)
+    cfg.Set("webserver_address", s.Webserver_address)
+    cfg.Set("maximum_notify", string(s.Maximum_notify))
 
     if err := cfg.SaveConfigFile(s.dir + CONF_NAME); err != nil {
         fmt.Printf("err with create conf file: %s\n", s.dir + CONF_NAME)
@@ -154,8 +170,7 @@ func (s *Settings) Load() (*Settings, error) {
     fmt.Printf("read config: %s\n", s.dir + CONF_NAME)
 
     if _, err := os.Stat(s.dir + CONF_NAME); os.IsNotExist(err) {
-        s.Save()
-        return s, err
+        return s.Save()
     }
 
     // read config file
@@ -173,7 +188,7 @@ func (s *Settings) Load() (*Settings, error) {
     s.Paused, _ = cfg.Bool("paused")
     s.IdleConst = second("idle")
     s.WorkConst = second("work")
-    s.Protect = second("protected")
+    s.Protect = second("protect")
     s.Idle_work_title = cfg.String("idle_work_title")
     s.Idle_work_body = cfg.String("idle_work_body")
     s.Idle_work_image = cfg.String("idle_work_image")
@@ -183,6 +198,9 @@ func (s *Settings) Load() (*Settings, error) {
     s.Unfinished_idle_title = cfg.String("unfinished_idle_title")
     s.Unfinished_idle_body = cfg.String("unfinished_idle_body")
     s.Unfinished_idle_image = cfg.String("unfinished_idle_image")
+    s.Alarm_file = cfg.String("alarm_file")
+    s.Webserver_address = cfg.String("webserver_address")
+    s.Maximum_notify, _ = cfg.Int("maximum_notify")
 
     return s, nil
 }
