@@ -155,7 +155,7 @@ func (s *Settings) Save() (*Settings, error) {
     cfg.Set("unfinished_idle_image", s.Unfinished_idle_image)
     cfg.Set("alarm_file", s.Alarm_file)
     cfg.Set("webserver_address", s.Webserver_address)
-    cfg.Set("maximum_notify", string(s.Maximum_notify))
+    cfg.Set("maximum_notify", fmt.Sprintf("%d", s.Maximum_notify))
 
     if err := cfg.SaveConfigFile(s.dir + CONF_NAME); err != nil {
         fmt.Printf("err with create conf file: %s\n", s.dir + CONF_NAME)
