@@ -35,6 +35,9 @@ angular.module('app')
           templateUrl: '/templates/settings.html'
           controller: 'settingsCtrl as settings'
 
+        .segment 'about',
+          templateUrl: '/templates/about.html'
+
     $routeProvider.otherwise
       redirectTo: '/'
   ]

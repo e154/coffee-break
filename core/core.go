@@ -1,64 +1,25 @@
 package core
 
-/*
-#cgo CFLAGS: -Ixprint
-#cgo LDFLAGS: -Lxprint/ -Lcore/xprint/ -lxprintidle -lX11 -lXss -lXdmcp -lXext
-#include "xprintidle.h"
-*/
-import "C"
-
 import (
     "fmt"
     "time"
-    "./notify"
     "strings"
+    "./notify"
     "./webserver"
     "./audio"
+    "./xprint"
+    st "./settings"
 )
 
 var (
-    display *C.Display
     isWork bool
     signal_count int
-    last_idle_time time.Duration
     tmp_idle_timer time.Duration
-    settings *Settings
+    settings *st.Settings
     player *audio.Player
 )
 
-func idle_time() {
-
-    if display == nil {
-        display = C.getDisplay()
-        if display == nil {
-            fmt.Printf("error: couldn't open display\n")
-            return
-        }
-    }
-
-    idle := new(C.ulong)
-    err := C.getIdle(idle, display)
-    if err != 0 {
-
-        var err_text string
-        switch err{
-            case 2:
-            err_text = "screen saver extension not supported"
-            case 3:
-            err_text = "couldn't query screen saver info"
-            default:
-            err_text = "unknow"
-        }
-
-        fmt.Printf("error: %s\n", err_text)
-        return
-    }
-    last_idle_time = settings.Idle
-    settings.Idle = time.Duration(*idle) * time.Millisecond
-}
-
 func fsm() {
-
     isWork = settings.Idle < time.Second
     protected := settings.Idle < settings.Protect
 
@@ -103,17 +64,18 @@ func fsm() {
             }
     }
 
-//    fmt.Printf("settings.Idle: %v\n", settings.Idle)
-//    fmt.Printf("last_idle_time: %v\n", last_idle_time)
-//    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
-//    fmt.Printf("protected: %t\n", protected)
-//    fmt.Printf("settings.Protect: %v\n", settings.Protect)
-//    fmt.Printf("settings.Stage: %s\n", settings.Stage)
-//    fmt.Printf("isWork: %t\n", isWork)
-//    fmt.Printf("Work: %v\n", settings.Work)
-//    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
-//    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
-//    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
+    fmt.Printf("\n")
+    fmt.Printf("settings.Idle: %v\n", settings.Idle)
+    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
+    fmt.Printf("protected: %t\n", protected)
+    fmt.Printf("settings.Protect: %v\n", settings.Protect)
+    fmt.Printf("settings.Stage: %s\n", settings.Stage)
+    fmt.Printf("isWork: %t\n", isWork)
+    fmt.Printf("Work: %v\n", settings.Work)
+    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
+    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
+    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
+    fmt.Printf("Notify_count: %d\n", settings.Notify_count)
 }
 
 func strConverter(in string) (out string) {
@@ -153,13 +115,15 @@ func send_signal(stage string) {
             go notify.Show(strConverter(settings.Unfinished_idle_title), strConverter(settings.Unfinished_idle_body), strConverter(settings.Unfinished_idle_image))
     }
 
-    player.Play()
+    if settings.SoundEnabled {
+        player.Play()
+    }
 }
 
 func Run() {
 
     // init settings
-    settings = SettingsPtr()
+    settings = st.SettingsPtr()
     settings.Init()
     settings.Load()
 
@@ -176,12 +140,14 @@ func Run() {
             select {
             case <-ticker:
                 settings.UpTime = time.Now().Sub(settings.StartTime)
-                go idle_time()
-                go fsm()
+                go xprint.Update()
+                fsm()
             }
         }
     }()
 
     webserver.Run(settings.Webserver_address)
 
+    var input string
+    fmt.Scanln(&input)
 }

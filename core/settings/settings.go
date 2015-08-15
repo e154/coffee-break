@@ -1,4 +1,4 @@
-package core
+package settings
 
 import (
     "fmt"
@@ -44,6 +44,8 @@ type Settings struct {
     Last_stage string
     Ready bool
     Paused bool
+    SoundEnabled bool
+    RunAtStartup bool
     Idle_work_title string
     Idle_work_body string
     Idle_work_image string
@@ -77,8 +79,6 @@ func (s *Settings) GetHomeDir() (string, error) {
 
 func (s *Settings) Init() *Settings {
 
-    fmt.Printf("Settings init ...\n")
-
     if len(s.HomeDir) == 0 {
         s.GetHomeDir()
     }
@@ -87,6 +87,8 @@ func (s *Settings) Init() *Settings {
     s.dir = fmt.Sprintf("%s/.%s/", s.HomeDir, APP_NAME)
 
     s.Paused = false
+    s.SoundEnabled = true
+    s.RunAtStartup = true
     s.WorkConst = 2700 * time.Second // 45min
     s.IdleConst = 900 * time.Second // 15min
     s.Tick = 1 * time.Second
@@ -118,7 +120,6 @@ func (s *Settings) Init() *Settings {
 
     if !exist {
         dir := fmt.Sprintf(`%s/.%s`, s.HomeDir, APP_NAME)
-        fmt.Printf("create dir: %s\n", dir)
         os.MkdirAll(dir, os.ModePerm)
     }
 
@@ -141,6 +142,8 @@ func (s *Settings) Save() (*Settings, error) {
     }
 
     cfg.Set("paused", fmt.Sprintf("%t", s.Paused))
+    cfg.Set("run_at_startup", fmt.Sprintf("%t", s.RunAtStartup))
+    cfg.Set("sound_enabled", fmt.Sprintf("%t", s.SoundEnabled))
     cfg.Set("idle", fmt.Sprintf("%v", s.IdleConst.Seconds()))
     cfg.Set("work", fmt.Sprintf("%v", s.WorkConst.Seconds()))
     cfg.Set("protect", fmt.Sprintf("%v", s.Protect.Seconds()))
@@ -167,7 +170,7 @@ func (s *Settings) Save() (*Settings, error) {
 
 func (s *Settings) Load() (*Settings, error) {
 
-    fmt.Printf("read config: %s\n", s.dir + CONF_NAME)
+//    fmt.Printf("read config: %s\n", s.dir + CONF_NAME)
 
     if _, err := os.Stat(s.dir + CONF_NAME); os.IsNotExist(err) {
         return s.Save()
@@ -185,6 +188,8 @@ func (s *Settings) Load() (*Settings, error) {
     }
 
     s.Ready = true
+    s.SoundEnabled, _ = cfg.Bool("sound_enabled")
+    s.RunAtStartup, _ = cfg.Bool("run_at_startup")
     s.Paused, _ = cfg.Bool("paused")
     s.IdleConst = second("idle")
     s.WorkConst = second("work")

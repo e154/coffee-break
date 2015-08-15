@@ -36,7 +36,8 @@ module.exports = {
         filename: 'app.min.css',
         source: [
             source + '/less/bootstrap.less',
-            source + '/less/bootstrap-theme.less'
+            source + '/less/bootstrap-theme.less',
+            source + '/less/app.less'
         ],
         dest: source + '/css',
         watch: source + '/less/**/*.less'
