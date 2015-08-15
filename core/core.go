@@ -9,6 +9,7 @@ import (
     "./audio"
     "./xprint"
     st "./settings"
+    "./systray"
 )
 
 var (
@@ -64,18 +65,18 @@ func fsm() {
             }
     }
 
-    fmt.Printf("\n")
-    fmt.Printf("settings.Idle: %v\n", settings.Idle)
-    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
-    fmt.Printf("protected: %t\n", protected)
-    fmt.Printf("settings.Protect: %v\n", settings.Protect)
-    fmt.Printf("settings.Stage: %s\n", settings.Stage)
-    fmt.Printf("isWork: %t\n", isWork)
-    fmt.Printf("Work: %v\n", settings.Work)
-    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
-    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
-    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
-    fmt.Printf("Notify_count: %d\n", settings.Notify_count)
+//    fmt.Printf("\n")
+//    fmt.Printf("settings.Idle: %v\n", settings.Idle)
+//    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
+//    fmt.Printf("protected: %t\n", protected)
+//    fmt.Printf("settings.Protect: %v\n", settings.Protect)
+//    fmt.Printf("settings.Stage: %s\n", settings.Stage)
+//    fmt.Printf("isWork: %t\n", isWork)
+//    fmt.Printf("Work: %v\n", settings.Work)
+//    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
+//    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
+//    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
+//    fmt.Printf("Notify_count: %d\n", settings.Notify_count)
 }
 
 func strConverter(in string) (out string) {
@@ -147,6 +148,8 @@ func Run() {
     }()
 
     webserver.Run(settings.Webserver_address)
+
+    systray.Run()
 
     var input string
     fmt.Scanln(&input)
