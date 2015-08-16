@@ -48,6 +48,7 @@ crashlytics.properties
 crashlytics-build.properties
 
 static_source/bower_components
+/core/systray/libsystray.so
 static_source/node_modules
 static_source/js
 node_modules
