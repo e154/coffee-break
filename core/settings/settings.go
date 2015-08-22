@@ -9,7 +9,7 @@ import (
 
     "github.com/astaxie/beego/config"
 
-    "../qt5"
+    "../capi"
 )
 
 const (
@@ -61,7 +61,7 @@ type Settings struct {
     Maximum_notify int
     Notify_count int
     Webserver_address string
-    SysTray qt5.SystemTray
+    SysTray capi.SystemTray
 }
 
 func (s *Settings) GetHomeDir() (string, error) {

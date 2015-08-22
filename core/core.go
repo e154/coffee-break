@@ -76,11 +76,6 @@ func fsm() {
 //    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
 //    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
 //    fmt.Printf("Notify_count: %d\n", settings.Notify_count)
-
-    if &settings.SysTray != nil {
-        settings.SysTray.SetTrayIcon("static_source/images/icons/watch-red.png")
-    }
-
 }
 
 func strConverter(in string) (out string) {

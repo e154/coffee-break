@@ -4,9 +4,7 @@ import (
 //    "log"
 //    daemon "github.com/tyranron/daemonigo"
     "./core"
-    "./core/qt5"
-    st "./core/settings"
-    "os"
+    "./core/systemtray"
 )
 
 func main() {
@@ -19,14 +17,7 @@ func main() {
 //    }
     // From now we are running in daemon process.
 
-    app := qt5.NewApplication(len(os.Args), os.Args[0])
-
     core.Run()
 
-    settings := st.SettingsPtr()
-    settings.SysTray = qt5.NewSystemTray("Hello from stdio\n")
-    settings.SysTray.SetTrayIcon("static_source/images/icons/watch-blue.png")
-    settings.SysTray.SetTrayToolTip("Watcher")
-
-    app.Exec()
+    systemtray.Run()
 }
