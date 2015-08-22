@@ -2,8 +2,6 @@ package systemtray
 
 import (
     . "../capi"
-//    "fmt"
-    "fmt"
 )
 
 func Run() {
@@ -19,12 +17,6 @@ func Run() {
 
     // actions
     quitAction := NewQAction("/icon", "&Quit", ApplicationPtr())
-
-    // connectors
-    quitAction.On("hovered", func(){
-        fmt.Println("obj got a click")
-        systray.SetIcon("static_source/images/icons/watch-red.png")
-    })
 
     // menu
     trayIconMenu := NewQMenu(dialog.Ptr())
