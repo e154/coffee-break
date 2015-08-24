@@ -3,7 +3,7 @@ package main
 import (
 //    "log"
 //    daemon "github.com/tyranron/daemonigo"
-    "./core"
+//    "./core"
     "./core/systemtray"
 )
 
@@ -17,7 +17,7 @@ func main() {
 //    }
     // From now we are running in daemon process.
 
-    core.Run()
+//    core.Run()
 
     systemtray.Run()
 }

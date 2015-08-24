@@ -1,31 +1,28 @@
 package systemtray
 
 import (
+    "C"
     . "../capi"
+    "fmt"
+    "unsafe"
 )
+
+func TimeCallback(x C.int) {
+    fmt.Println("callback with", x)
+}
 
 func Run() {
 
     NewGuiApplication()
 
-    // systray
-    dialog := NewQDialog(nil)
-    systray := NewSystemTray(dialog.Ptr())
-    systray.SetIcon("static_source/images/icons/watch-blue.png")
+    systray := GetSystemTray()
+    systray.SetIcon("static_source/images/icons/watch-red.png")
     systray.SetToolTip("Watcher")
-
-
-    // actions
-    quitAction := NewQAction("/icon", "&Quit", ApplicationPtr())
-
-    // menu
-    trayIconMenu := NewQMenu(dialog.Ptr())
-    trayIconMenu.Clear()
-    trayIconMenu.AddAction(quitAction)
-
-    systray.SetContextMenu(trayIconMenu)
     systray.SetVisible(true)
 
+    var TimeCallbackFunc = TimeCallback
+    systray.SetTimeCallback(unsafe.Pointer(&TimeCallbackFunc))
 
     ApplicationExec()
 }
+

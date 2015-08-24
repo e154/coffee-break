@@ -50,6 +50,11 @@ crashlytics-build.properties
 static_source/bower_components
 /core/systray/libsystray.so
 /tmp
+/core/capi/libcapi.so
+/core/capi/src/.project
+/core/capi/src/Debug
+/core/capi/src/tmp
+/core/capi/src/.cproject
 static_source/node_modules
 static_source/js
 node_modules
