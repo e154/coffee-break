@@ -51,6 +51,14 @@ func (t SystemTray) SetTimeCallback(callback unsafe.Pointer) {
     C.SetTimeCallback(t.addr, callback)
 }
 
+func (t SystemTray) SetTime(time int) {
+    C.SetTime((t.addr), C.int(time))
+}
+
+func (t SystemTray) GetTime() int {
+    return int(C.GetTime(t.addr))
+}
+
 //export go_callback_int
 func go_callback_int(pfoo unsafe.Pointer, p1 C.int) {
     foo := *(*func(C.int))(pfoo)

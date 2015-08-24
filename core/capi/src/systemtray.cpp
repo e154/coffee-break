@@ -202,17 +202,17 @@ void SystemTray::createActions() {
 	time10mAction = new QAction(tr("&10 minutes"), this);
 	time5mAction = new QAction(tr("&5  minutes"), this);
 
-	mTimeStates.push_back(time4hAction);
-	mTimeStates.push_back(time3hAction);
-	mTimeStates.push_back(time2hAction);
-	mTimeStates.push_back(time1hAction);
-	mTimeStates.push_back(time45mAction);
-	mTimeStates.push_back(time30mAction);
-	mTimeStates.push_back(time25mAction);
-	mTimeStates.push_back(time20mAction);
-	mTimeStates.push_back(time15mAction);
-	mTimeStates.push_back(time10mAction);
-	mTimeStates.push_back(time5mAction);
+	mTimeStates.insert( std::pair<int, QAction*>(4 * HOUR,time4hAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(3 * HOUR,time3hAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(2 * HOUR,time2hAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(1 * HOUR,time1hAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(45 * MINUTE,time45mAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(30 * MINUTE,time30mAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(25 * MINUTE,time25mAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(20 * MINUTE,time20mAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(15 * MINUTE,time15mAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(10 * MINUTE,time10mAction) );
+	mTimeStates.insert( std::pair<int, QAction*>(5 * MINUTE,time5mAction) );
 
 	//default time menu
 	dTime4hRadio = new QRadioButton(tr("&4 hours"), this);
@@ -293,19 +293,21 @@ void SystemTray::showHelp() {
 	qDebug() << "show help";
 }
 
-void SystemTray::setTimer(QAction *action, int time) {
+void SystemTray::setTimer(QAction *action) {
 
+	int time;
 	if ( !mTimeStates.empty() ) {
 		actionStates::iterator it = mTimeStates.begin();
 		while ( it != mTimeStates.end()){
-			if ((*it) != action) {
-				(*it)->setDisabled(false);
-				(*it)->setChecked(false);
-				(*it)->setCheckable(false);
+			if ( it->second != action) {
+				it->second->setDisabled(false);
+				it->second->setChecked(false);
+				it->second->setCheckable(false);
 			} else {
-				(*it)->setDisabled(true);
-				(*it)->setCheckable(true);
-				(*it)->setChecked(true);
+				it->second->setDisabled(true);
+				it->second->setCheckable(true);
+				it->second->setChecked(true);
+				time = it->first;
 			}
 			++it;
 		}
@@ -320,6 +322,24 @@ void SystemTray::setTimer(QAction *action, int time) {
 
 void SystemTray::setTimer(int time) {
 
+	if ( !mTimeStates.empty() ) {
+		actionStates::iterator it = mTimeStates.begin();
+		while ( it != mTimeStates.end()){
+			if ( it->first != time) {
+				it->second->setDisabled(false);
+				it->second->setChecked(false);
+				it->second->setCheckable(false);
+			} else {
+				it->second->setDisabled(true);
+				it->second->setCheckable(true);
+				it->second->setChecked(true);
+				time = it->first;
+			}
+			++it;
+		}
+	}
+
+	mCurrentTimeLimit = time;
 }
 
 void SystemTray::setRunAtStartUp() {

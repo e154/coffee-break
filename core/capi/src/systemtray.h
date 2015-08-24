@@ -26,6 +26,7 @@
 #include <QGridLayout>
 #include <QDialog>
 #include <iostream>
+#include <map>
 
 const int SECOND = 1;
 const int MINUTE = 60 * SECOND;
@@ -33,7 +34,7 @@ const int HOUR = 60 * MINUTE;
 
 class QRadioButton;
 
-typedef std::vector<QAction*> actionStates;
+typedef std::map<int, QAction*> actionStates;
 
 class SystemTray : public QDialog
 {
@@ -115,18 +116,18 @@ private slots:
 	void setAlarm(int state, int value);
 	void showHelp();
 	void setRunAtStartUp();
-	void setTimer(QAction *action, int time);
-	inline void set4hTime() { setTimer(time4hAction, 4 * HOUR); }
-	inline void set3hTime() { setTimer(time3hAction, 3 * HOUR); }
-	inline void set2hTime() { setTimer(time2hAction, 2 * HOUR); }
-	inline void set1hTime() { setTimer(time1hAction, 1 * HOUR); }
-	inline void set45mTime() { setTimer(time45mAction, 45 * MINUTE); }
-	inline void set30mTime() { setTimer(time30mAction, 30 * MINUTE); }
-	inline void set25mTime() { setTimer(time25mAction, 25 * MINUTE); }
-	inline void set20mTime() { setTimer(time20mAction, 20 * MINUTE); }
-	inline void set15mTime() { setTimer(time15mAction, 15 * MINUTE); }
-	inline void set10mTime() { setTimer(time10mAction, 10 * MINUTE); }
-	inline void set5mTime() { setTimer(time5mAction, 5 * MINUTE); }
+	void setTimer(QAction *action);
+	inline void set4hTime() { setTimer(time4hAction); }
+	inline void set3hTime() { setTimer(time3hAction); }
+	inline void set2hTime() { setTimer(time2hAction); }
+	inline void set1hTime() { setTimer(time1hAction); }
+	inline void set45mTime() { setTimer(time45mAction); }
+	inline void set30mTime() { setTimer(time30mAction); }
+	inline void set25mTime() { setTimer(time25mAction); }
+	inline void set20mTime() { setTimer(time20mAction); }
+	inline void set15mTime() { setTimer(time15mAction); }
+	inline void set10mTime() { setTimer(time10mAction); }
+	inline void set5mTime() { setTimer(time5mAction); }
 
 private:
 	void createTrayIcon();

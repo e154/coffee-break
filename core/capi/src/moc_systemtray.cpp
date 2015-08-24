@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SystemTray_t {
-    QByteArrayData data[27];
-    char stringdata[291];
+    QByteArrayData data[26];
+    char stringdata[286];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -44,24 +44,23 @@ QT_MOC_LITERAL(11, 129, 15),
 QT_MOC_LITERAL(12, 145, 8),
 QT_MOC_LITERAL(13, 154, 8),
 QT_MOC_LITERAL(14, 163, 6),
-QT_MOC_LITERAL(15, 170, 4),
-QT_MOC_LITERAL(16, 175, 9),
-QT_MOC_LITERAL(17, 185, 9),
-QT_MOC_LITERAL(18, 195, 9),
-QT_MOC_LITERAL(19, 205, 9),
-QT_MOC_LITERAL(20, 215, 10),
-QT_MOC_LITERAL(21, 226, 10),
-QT_MOC_LITERAL(22, 237, 10),
-QT_MOC_LITERAL(23, 248, 10),
-QT_MOC_LITERAL(24, 259, 10),
-QT_MOC_LITERAL(25, 270, 10),
-QT_MOC_LITERAL(26, 281, 9)
+QT_MOC_LITERAL(15, 170, 9),
+QT_MOC_LITERAL(16, 180, 9),
+QT_MOC_LITERAL(17, 190, 9),
+QT_MOC_LITERAL(18, 200, 9),
+QT_MOC_LITERAL(19, 210, 10),
+QT_MOC_LITERAL(20, 221, 10),
+QT_MOC_LITERAL(21, 232, 10),
+QT_MOC_LITERAL(22, 243, 10),
+QT_MOC_LITERAL(23, 254, 10),
+QT_MOC_LITERAL(24, 265, 10),
+QT_MOC_LITERAL(25, 276, 9)
     },
     "SystemTray\0trayAboutToShow\0\0iconActivated\0"
     "QSystemTrayIcon::ActivationReason\0"
     "reason\0setDefaultTimer\0state\0value\0"
     "setAlarm\0showHelp\0setRunAtStartUp\0"
-    "setTimer\0QAction*\0action\0time\0set4hTime\0"
+    "setTimer\0QAction*\0action\0set4hTime\0"
     "set3hTime\0set2hTime\0set1hTime\0set45mTime\0"
     "set30mTime\0set25mTime\0set20mTime\0"
     "set15mTime\0set10mTime\0set5mTime"
@@ -88,18 +87,18 @@ static const uint qt_meta_data_SystemTray[] = {
        9,    2,  113,    2, 0x08 /* Private */,
       10,    0,  118,    2, 0x08 /* Private */,
       11,    0,  119,    2, 0x08 /* Private */,
-      12,    2,  120,    2, 0x08 /* Private */,
-      16,    0,  125,    2, 0x08 /* Private */,
-      17,    0,  126,    2, 0x08 /* Private */,
-      18,    0,  127,    2, 0x08 /* Private */,
-      19,    0,  128,    2, 0x08 /* Private */,
-      20,    0,  129,    2, 0x08 /* Private */,
-      21,    0,  130,    2, 0x08 /* Private */,
-      22,    0,  131,    2, 0x08 /* Private */,
-      23,    0,  132,    2, 0x08 /* Private */,
-      24,    0,  133,    2, 0x08 /* Private */,
-      25,    0,  134,    2, 0x08 /* Private */,
-      26,    0,  135,    2, 0x08 /* Private */,
+      12,    1,  120,    2, 0x08 /* Private */,
+      15,    0,  123,    2, 0x08 /* Private */,
+      16,    0,  124,    2, 0x08 /* Private */,
+      17,    0,  125,    2, 0x08 /* Private */,
+      18,    0,  126,    2, 0x08 /* Private */,
+      19,    0,  127,    2, 0x08 /* Private */,
+      20,    0,  128,    2, 0x08 /* Private */,
+      21,    0,  129,    2, 0x08 /* Private */,
+      22,    0,  130,    2, 0x08 /* Private */,
+      23,    0,  131,    2, 0x08 /* Private */,
+      24,    0,  132,    2, 0x08 /* Private */,
+      25,    0,  133,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -108,7 +107,7 @@ static const uint qt_meta_data_SystemTray[] = {
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    7,    8,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 13, QMetaType::Int,   14,   15,
+    QMetaType::Void, 0x80000000 | 13,   14,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -135,7 +134,7 @@ void SystemTray::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 3: _t->setAlarm((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 4: _t->showHelp(); break;
         case 5: _t->setRunAtStartUp(); break;
-        case 6: _t->setTimer((*reinterpret_cast< QAction*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 6: _t->setTimer((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
         case 7: _t->set4hTime(); break;
         case 8: _t->set3hTime(); break;
         case 9: _t->set2hTime(); break;

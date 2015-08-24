@@ -22,6 +22,7 @@ func Run() {
 
     var TimeCallbackFunc = TimeCallback
     systray.SetTimeCallback(unsafe.Pointer(&TimeCallbackFunc))
+    systray.SetTime(60 * 4 * 60)
 
     ApplicationExec()
 }
