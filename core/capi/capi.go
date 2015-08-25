@@ -35,29 +35,24 @@ func GetSystemTray() SystemTray {
     return instance
 }
 
-func (t SystemTray) SetIcon(img string) {
-    C.SetTrayIcon((t.addr), C.CString(img))
-}
-
-func (t SystemTray) SetToolTip(tooltip string) {
-    C.SetTrayToolTip(t.addr, C.CString(tooltip))
-}
-
-func (t SystemTray) SetVisible(b bool) {
-    C.SetTrayVisible(t.addr, C._Bool(b))
-}
-
-func (t SystemTray) SetTimeCallback(callback unsafe.Pointer) {
-    C.SetTimeCallback(t.addr, callback)
-}
-
-func (t SystemTray) SetTime(time int) {
-    C.SetTime((t.addr), C.int(time))
-}
-
-func (t SystemTray) GetTime() int {
-    return int(C.GetTime(t.addr))
-}
+func (t SystemTray) SetIcon(img string) { C.SetTrayIcon((t.addr), C.CString(img)) }
+func (t SystemTray) SetToolTip(tooltip string) { C.SetTrayToolTip(t.addr, C.CString(tooltip)) }
+func (t SystemTray) SetVisible(b bool) { C.SetTrayVisible(t.addr, C._Bool(b)) }
+func (t SystemTray) SetTimeCallback(callback unsafe.Pointer) { C.SetTimeCallback(t.addr, callback) }
+func (t SystemTray) SetTime(time int) { C.SetTime((t.addr), C.int(time)) }
+func (t SystemTray) GetTime() int { return int(C.GetTime(t.addr)) }
+func (t SystemTray) SetDTimeCallback(callback unsafe.Pointer) { C.SetDTimeCallback(t.addr, callback) }
+func (t SystemTray) SetDTime(time int) { C.SetDTime((t.addr), C.int(time)) }
+func (t SystemTray) GetDTime() int { return int(C.GetDTime(t.addr)) }
+func (t SystemTray) SetAlarmCallback(callback unsafe.Pointer) { C.SetDTimeCallback(t.addr, callback) }
+func (t SystemTray) SetAlarm(state int) { C.SetAlarm((t.addr), C.int(state)) }
+func (t SystemTray) GetAlarm() int { return int(C.GetAlarm(t.addr)) }
+func (t SystemTray) SetRunAtStartupCallback(callback unsafe.Pointer) { C.SetRunAtStartupCallback(t.addr, callback) }
+func (t SystemTray) SetRunAtStartup(state int) { C.SetRunAtStartup((t.addr), C.int(state)) }
+func (t SystemTray) GetRunAtStartup() int { return int(C.GetRunAtStartup(t.addr)) }
+func (t SystemTray) SetAlarmInfo(info string) { C.SetAlarmInfo((t.addr), C.CString(info)) }
+func (t SystemTray) GetAlarmInfo() string { return C.GoString(C.GetAlarmInfo(t.addr)) }
+func (t SystemTray) SetIconActivatedCallback(callback unsafe.Pointer) { C.SetIconActivatedCallback(t.addr, callback) }
 
 //export go_callback_int
 func go_callback_int(pfoo unsafe.Pointer, p1 C.int) {

@@ -25,6 +25,7 @@
 #include <QSystemTrayIcon>
 #include <QGridLayout>
 #include <QDialog>
+#include <QAction>
 #include <iostream>
 #include <map>
 
@@ -43,7 +44,7 @@ class SystemTray : public QDialog
 private:
 	QMenu *mMainMenu;
 	QMenu *mAlarmMenu;
-	QMenu *mTimerMenu;
+	QMenu *mDefaultTimerMenu;
 
 	QGridLayout *mainLayout;
 	QAction *exitAction;
@@ -53,7 +54,6 @@ private:
 	QAction *helpAction;
 	QAction *alarmInfo;
 
-	QGridLayout *timeLayout;
 	QAction *time4hAction;
 	QAction *time3hAction;
 	QAction *time2hAction;
@@ -66,24 +66,23 @@ private:
 	QAction *time10mAction;
 	QAction *time5mAction;
 
-	QGridLayout *dTimeLayout;
-	QRadioButton *dTime4hRadio;
-	QRadioButton *dTime3hRadio;
-	QRadioButton *dTime2hRadio;
-	QRadioButton *dTime1hRadio;
-	QRadioButton *dTime45mRadio;
-	QRadioButton *dTime30mRadio;
-	QRadioButton *dTime25mRadio;
-	QRadioButton *dTime20mRadio;
-	QRadioButton *dTime15mRadio;
-	QRadioButton *dTime10mRadio;
-	QRadioButton *dTime5mRadio;
+	QAction *dTime4hAction;
+	QAction *dTime3hAction;
+	QAction *dTime2hAction;
+	QAction *dTime1hAction;
+	QAction *dTime45mAction;
+	QAction *dTime30mAction;
+	QAction *dTime25mAction;
+	QAction *dTime20mAction;
+	QAction *dTime15mAction;
+	QAction *dTime10mAction;
+	QAction *dTime5mAction;
 
 	QSystemTrayIcon *mTrayIcon;
-	QGridLayout *alarmLayout;
-	QRadioButton *alarmRadio1;
-	QRadioButton *alarmRadio2;
-	QRadioButton *alarmRadio3;
+
+	QAction *alarmAction1;
+	QAction *alarmAction2;
+	QAction *alarmAction3;
 
 public:
 	SystemTray();
@@ -109,14 +108,42 @@ public:
 		mTimeCallback = callback;
 	}
 
+	// default time
+	void setDTimer(int time = 0, QAction *action = 0);
+	int getDtime() { return mCurrentDefaultTime; }
+	void setDtimeCallback(void* callback) {
+		mDtimeCallback = callback;
+	}
+
+	// alarm state
+	void setAlarm(int inState, QAction *action);
+	int getAlarm() { return mCurrentAlarm; }
+	void setAlarmCallback(void* callback) {
+		mDtimeCallback = callback;
+	}
+
+	// run at startup
+	void setRunAtStartup(int state = 0);
+	int getRunAtStartup() { return mCurrentRunAtStartup; }
+	void setRunAtStartupCallback(void* callback) {
+		mRunAtStartupCallback = callback;
+	}
+
+	// alarm info
+	void setAlarmInfo(char *text) { alarmInfo->setText(QString(text)); }
+	char *getAlarmInfo() { return (char*)alarmInfo->text().data(); }
+
+	// icon activated callback
+	void setIconActivatedCallback(void* callback) {
+		mIconActivatedCallback = callback;
+	}
+
 private slots:
 	void trayAboutToShow();
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
-	void setDefaultTimer(int state, int value);
-	void setAlarm(int state, int value);
-	void showHelp();
-	void setRunAtStartUp();
+	void showHelp() {};
 
+	// time
 	inline void set4hTime() { setTimer(0, time4hAction); }
 	inline void set3hTime() { setTimer(0, time3hAction); }
 	inline void set2hTime() { setTimer(0, time2hAction); }
@@ -129,6 +156,30 @@ private slots:
 	inline void set10mTime() { setTimer(0, time10mAction); }
 	inline void set5mTime() { setTimer(0, time5mAction); }
 
+	// default time
+	inline void set4hdTime() { setDTimer(0, dTime4hAction); }
+	inline void set3hdTime() { setDTimer(0, dTime3hAction); }
+	inline void set2hdTime() { setDTimer(0, dTime2hAction); }
+	inline void set1hdTime() { setDTimer(0, dTime1hAction); }
+	inline void set45mdTime() { setDTimer(0, dTime45mAction); }
+	inline void set30mdTime() { setDTimer(0, dTime30mAction); }
+	inline void set25mdTime() { setDTimer(0, dTime25mAction); }
+	inline void set20mdTime() { setDTimer(0, dTime20mAction); }
+	inline void set15mdTime() { setDTimer(0, dTime15mAction); }
+	inline void set10mdTime() { setDTimer(0, dTime10mAction); }
+	inline void set5mdTime() { setDTimer(0, dTime5mAction); }
+
+	// alarm
+	inline void setAlarm1() { setAlarm(0, alarmAction1); }
+	inline void setAlarm2() { setAlarm(0, alarmAction2); }
+	inline void setAlarm3() { setAlarm(0, alarmAction3); }
+
+	inline void setRunAtStartup1() {
+
+		int state = (runAtStartUpAction->isChecked())?1:0;
+		setRunAtStartup(state);
+	};
+
 private:
 	void createTrayIcon();
 	void createActions();
@@ -137,9 +188,17 @@ private:
 
 protected:
 	void* mTimeCallback;
+	void* mDtimeCallback;
+	void* mAlarmCallback;
+	void* mRunAtStartupCallback;
+	void* mIconActivatedCallback;
 	actionStates mTimeStates;
+	actionStates mDtimeStates;
+	actionStates mAlarmStates;
 	int mCurrentTimeLimit;
 	int mCurrentDefaultTime;
+	int mCurrentAlarm;
+	int mCurrentRunAtStartup;
 
 };
 

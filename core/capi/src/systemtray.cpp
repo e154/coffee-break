@@ -44,7 +44,7 @@ SystemTray *SystemTray::mSystemTray = NULL;
 SystemTray::SystemTray():
 		mMainMenu(0),
 		mAlarmMenu(0),
-		mTimerMenu(0),
+		mDefaultTimerMenu(0),
 
 		mainLayout(0),
 		exitAction(0),
@@ -53,7 +53,6 @@ SystemTray::SystemTray():
 		helpAction(0),
 		alarmInfo(0),
 
-		timeLayout(0),
 		time4hAction(0),
 		time3hAction(0),
 		time2hAction(0),
@@ -66,23 +65,22 @@ SystemTray::SystemTray():
 		time10mAction(0),
 		time5mAction(0),
 
-		dTimeLayout(0),
-		dTime4hRadio(0),
-		dTime3hRadio(0),
-		dTime2hRadio(0),
-		dTime1hRadio(0),
-		dTime45mRadio(0),
-		dTime30mRadio(0),
-		dTime25mRadio(0),
-		dTime20mRadio(0),
-		dTime15mRadio(0),
-		dTime10mRadio(0),
-		dTime5mRadio(0),
+		dTime4hAction(0),
+		dTime3hAction(0),
+		dTime2hAction(0),
+		dTime1hAction(0),
+		dTime45mAction(0),
+		dTime30mAction(0),
+		dTime25mAction(0),
+		dTime20mAction(0),
+		dTime15mAction(0),
+		dTime10mAction(0),
+		dTime5mAction(0),
 		mTrayIcon(0),
-		alarmLayout(0),
-		alarmRadio1(0),
-		alarmRadio2(0),
-		alarmRadio3(0),
+
+		alarmAction1(0),
+		alarmAction2(0),
+		alarmAction3(0),
 		mCurrentTimeLimit(0)
 {
 	init();
@@ -118,15 +116,16 @@ void SystemTray::createTrayIcon() {
 
 void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    switch (reason) {
-    case QSystemTrayIcon::Trigger:
-    case QSystemTrayIcon::DoubleClick:
-    	showMessage("title", "message");
-        qDebug() << "dblclick";
-        break;
-    default:
-        ;
-    }
+//    switch (reason) {
+//    case QSystemTrayIcon::Trigger:
+//    case QSystemTrayIcon::DoubleClick:
+//        break;
+//    default:
+//        ;
+//    }
+
+    if(mIconActivatedCallback)
+		go_callback_int(mIconActivatedCallback, reason);
 }
 
 void SystemTray::trayAboutToShow() {
@@ -138,7 +137,7 @@ void SystemTray::trayAboutToShow() {
 
 	mMainMenu->addSeparator();
 	mMainMenu->addAction(runAtStartUpAction);
-	mTimerMenu = mMainMenu->addMenu(tr("&Default timer"));
+	mDefaultTimerMenu = mMainMenu->addMenu(tr("&Default timer"));
 	mAlarmMenu = mMainMenu->addMenu(tr("&Alarm sound"));
 	mMainMenu->addAction(helpAction);
 
@@ -159,25 +158,22 @@ void SystemTray::trayAboutToShow() {
 	mMainMenu->addAction(time5mAction);
 
 	// default time menu
-	dTimeLayout = new QGridLayout;
-	dTimeLayout->addWidget(dTime4hRadio);
-	dTimeLayout->addWidget(dTime3hRadio);
-	dTimeLayout->addWidget(dTime2hRadio);
-	dTimeLayout->addWidget(dTime45mRadio);
-	dTimeLayout->addWidget(dTime30mRadio);
-	dTimeLayout->addWidget(dTime25mRadio);
-	dTimeLayout->addWidget(dTime20mRadio);
-	dTimeLayout->addWidget(dTime15mRadio);
-	dTimeLayout->addWidget(dTime10mRadio);
-	dTimeLayout->addWidget(dTime5mRadio);
-	mTimerMenu->setLayout(dTimeLayout);
+	mDefaultTimerMenu->addAction(dTime4hAction);
+	mDefaultTimerMenu->addAction(dTime3hAction);
+	mDefaultTimerMenu->addAction(dTime2hAction);
+	mDefaultTimerMenu->addAction(dTime45mAction);
+	mDefaultTimerMenu->addAction(dTime30mAction);
+	mDefaultTimerMenu->addAction(dTime25mAction);
+	mDefaultTimerMenu->addAction(dTime20mAction);
+	mDefaultTimerMenu->addAction(dTime15mAction);
+	mDefaultTimerMenu->addAction(dTime10mAction);
+	mDefaultTimerMenu->addAction(dTime5mAction);
 
 	// alarm menu
-	alarmLayout = new QGridLayout;
-	alarmLayout->addWidget(alarmRadio1);
-	alarmLayout->addWidget(alarmRadio2);
-	alarmLayout->addWidget(alarmRadio3);
-	mAlarmMenu->setLayout(alarmLayout);
+	mAlarmMenu->addAction(alarmAction1);
+	mAlarmMenu->addAction(alarmAction2);
+	mAlarmMenu->addAction(alarmAction3);
+
 }
 
 void SystemTray::createActions() {
@@ -202,6 +198,7 @@ void SystemTray::createActions() {
 	time10mAction = new QAction(tr("&10 minutes"), this);
 	time5mAction = new QAction(tr("&5  minutes"), this);
 
+	// time insert
 	mTimeStates.insert( std::pair<int, QAction*>(4 * HOUR,time4hAction) );
 	mTimeStates.insert( std::pair<int, QAction*>(3 * HOUR,time3hAction) );
 	mTimeStates.insert( std::pair<int, QAction*>(2 * HOUR,time2hAction) );
@@ -214,22 +211,43 @@ void SystemTray::createActions() {
 	mTimeStates.insert( std::pair<int, QAction*>(10 * MINUTE,time10mAction) );
 	mTimeStates.insert( std::pair<int, QAction*>(5 * MINUTE,time5mAction) );
 
-	//default time menu
-	dTime4hRadio = new QRadioButton(tr("&4 hours"), this);
-	dTime3hRadio = new QRadioButton(tr("&3 hours"), this);
-	dTime2hRadio = new QRadioButton(tr("&2 hours"), this);
-	dTime1hRadio = new QRadioButton(tr("&1 hour"), this);
-	dTime45mRadio = new QRadioButton(tr("&45 minutes"), this);
-	dTime30mRadio = new QRadioButton(tr("&30 minutes"), this);
-	dTime25mRadio = new QRadioButton(tr("&25 minutes"), this);
-	dTime20mRadio = new QRadioButton(tr("&20 minutes"), this);
-	dTime15mRadio = new QRadioButton(tr("&15 minutes"), this);
-	dTime10mRadio = new QRadioButton(tr("&10 minutes"), this);
-	dTime5mRadio = new QRadioButton(tr("&5  minutes"), this);
+	// default time menu
+	dTime4hAction = new QAction(tr("&4 hours"), this);
+	dTime3hAction = new QAction(tr("&3 hours"), this);
+	dTime2hAction = new QAction(tr("&2 hours"), this);
+	dTime1hAction = new QAction(tr("&1 hour"), this);
+	dTime45mAction = new QAction(tr("&45 minutes"), this);
+	dTime30mAction = new QAction(tr("&30 minutes"), this);
+	dTime25mAction = new QAction(tr("&25 minutes"), this);
+	dTime20mAction = new QAction(tr("&20 minutes"), this);
+	dTime15mAction = new QAction(tr("&15 minutes"), this);
+	dTime10mAction = new QAction(tr("&10 minutes"), this);
+	dTime5mAction = new QAction(tr("&5  minutes"), this);
 
-	alarmRadio1 = new QRadioButton(tr("&Alarm clock"), this);
-	alarmRadio2 = new QRadioButton(tr("A&nnoying alarm clock"), this);
-	alarmRadio3 = new QRadioButton(tr("Di&sabled"), this);
+	mDtimeStates.insert( std::pair<int, QAction*>(4 * HOUR,dTime4hAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(3 * HOUR,dTime3hAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(2 * HOUR,dTime2hAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(1 * HOUR,dTime1hAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(45 * MINUTE,dTime45mAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(30 * MINUTE,dTime30mAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(25 * MINUTE,dTime25mAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(20 * MINUTE,dTime20mAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(15 * MINUTE,dTime15mAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(10 * MINUTE,dTime10mAction) );
+	mDtimeStates.insert( std::pair<int, QAction*>(5 * MINUTE,dTime5mAction) );
+
+	// alarm menu
+	alarmAction1 = new QAction(tr("&Alarm clock"), this);
+	alarmAction2 = new QAction(tr("A&nnoying alarm clock"), this);
+	alarmAction3 = new QAction(tr("Di&sabled"), this);
+
+	mAlarmStates.insert( std::pair<int, QAction*>(1,alarmAction1) );
+	mAlarmStates.insert( std::pair<int, QAction*>(2,alarmAction2) );
+	mAlarmStates.insert( std::pair<int, QAction*>(3,alarmAction3) );
+
+	connect(alarmAction1, SIGNAL(triggered()), this, SLOT(setAlarm1()));
+	connect(alarmAction2, SIGNAL(triggered()), this, SLOT(setAlarm2()));
+	connect(alarmAction3, SIGNAL(triggered()), this, SLOT(setAlarm3()));
 
 	exitAction = new QAction(tr("&Exit"), this);
 
@@ -237,28 +255,23 @@ void SystemTray::createActions() {
 	connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 	// run At StartUp
-	connect(runAtStartUpAction, SIGNAL(triggered()), this, SLOT(setRunAtStartUp()));
+	connect(runAtStartUpAction, SIGNAL(triggered()), this, SLOT(setRunAtStartup1()));
 
 	// show help
 	connect(helpAction, SIGNAL(triggered()), this, SLOT(showHelp()));
 
-	// set alarm
-	connect(alarmRadio1, &QAbstractButton::toggled, this, [=](int state){ setAlarm(state, 1); });
-	connect(alarmRadio2, &QAbstractButton::toggled, this, [=](int state){ setAlarm(state, 2); });
-	connect(alarmRadio3, &QAbstractButton::toggled, this, [=](int state){ setAlarm(state, 3); });
-
 	// set default time
-	connect(dTime4hRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 4 * HOUR); });
-	connect(dTime3hRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 3 * HOUR); });
-	connect(dTime2hRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 2 * HOUR); });
-	connect(dTime1hRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 1 * HOUR); });
-	connect(dTime45mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 45 * MINUTE); });
-	connect(dTime30mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 30 * MINUTE); });
-	connect(dTime25mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 25 * MINUTE); });
-	connect(dTime20mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 20 * MINUTE); });
-	connect(dTime15mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 15 * MINUTE); });
-	connect(dTime10mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 10 * MINUTE); });
-	connect(dTime5mRadio, &QAbstractButton::toggled, this, [=](int state){ setDefaultTimer(state, 5 * MINUTE); });
+	connect(dTime4hAction, SIGNAL(triggered()), this, SLOT(set4hdTime()));
+	connect(dTime3hAction, SIGNAL(triggered()), this, SLOT(set3hdTime()));
+	connect(dTime2hAction, SIGNAL(triggered()), this, SLOT(set2hdTime()));
+	connect(dTime1hAction, SIGNAL(triggered()), this, SLOT(set1hdTime()));
+	connect(dTime45mAction, SIGNAL(triggered()), this, SLOT(set45mdTime()));
+	connect(dTime30mAction, SIGNAL(triggered()), this, SLOT(set30mdTime()));
+	connect(dTime25mAction, SIGNAL(triggered()), this, SLOT(set25mdTime()));
+	connect(dTime20mAction, SIGNAL(triggered()), this, SLOT(set20mdTime()));
+	connect(dTime15mAction, SIGNAL(triggered()), this, SLOT(set15mdTime()));
+	connect(dTime10mAction, SIGNAL(triggered()), this, SLOT(set10mdTime()));
+	connect(dTime5mAction, SIGNAL(triggered()), this, SLOT(set5mdTime()));
 
 	// set time
 	connect(time4hAction, SIGNAL(triggered()), this, SLOT(set4hTime()));
@@ -274,23 +287,72 @@ void SystemTray::createActions() {
 	connect(time5mAction, SIGNAL(triggered()), this, SLOT(set5mTime()));
 }
 
-void SystemTray::setDefaultTimer(int state, int value) {
+void SystemTray::setDTimer(int inTime, QAction *action) {
 
-	if(state == 0) return;
+	int time = 45 * MINUTE;
+	if ( !mDtimeStates.empty() ) {
+		actionStates::iterator it = mDtimeStates.begin();
+		while ( it != mDtimeStates.end()){
 
-	qDebug() << "set default time: " << value;
+			if (
+					(inTime == 0 && action != 0x0 && it->second != action) ||
+					(inTime != 0 && action == 0x0 && it->first != inTime)
+					)
+			{
+				it->second->setDisabled(false);
+				it->second->setChecked(false);
+				it->second->setCheckable(false);
+
+			} else {
+
+				it->second->setDisabled(true);
+				it->second->setCheckable(true);
+				it->second->setChecked(true);
+				time = it->first;
+			}
+			++it;
+		}
+	}
+
+	mCurrentDefaultTime = (inTime == 0) ? time : inTime;
+
+	// call back to go side
+	if(mDtimeCallback)
+		go_callback_int(mDtimeCallback, time);
 }
 
-void SystemTray::setAlarm(int state, int value) {
+void SystemTray::setAlarm(int inState, QAction *action) {
 
-	if(state == 0) return;
+	int state = 1;
+	if ( !mAlarmStates.empty() ) {
+		actionStates::iterator it = mAlarmStates.begin();
+		while ( it != mAlarmStates.end()){
 
-	qDebug() << "set alarm: " << value;
-}
+			if (
+					(inState == 0 && action != 0x0 && it->second != action) ||
+					(inState != 0 && action == 0x0 && it->first != inState)
+					)
+			{
+				it->second->setDisabled(false);
+				it->second->setChecked(false);
+				it->second->setCheckable(false);
 
-void SystemTray::showHelp() {
+			} else {
 
-	qDebug() << "show help";
+				it->second->setDisabled(true);
+				it->second->setCheckable(true);
+				it->second->setChecked(true);
+				state = it->first;
+			}
+			++it;
+		}
+	}
+
+	mCurrentAlarm = (inState == 0) ? state : inState;
+
+	// call back to go side
+	if(mAlarmCallback)
+		go_callback_int(mAlarmCallback, state);
 }
 
 void SystemTray::setTimer(int inTime, QAction *action) {
@@ -327,7 +389,17 @@ void SystemTray::setTimer(int inTime, QAction *action) {
 		go_callback_int(mTimeCallback, time);
 }
 
-void SystemTray::setRunAtStartUp() {
+void SystemTray::setRunAtStartup(int state) {
 
-	qDebug() << "Run at startup: " << runAtStartUpAction->isChecked();
+	if(state) {
+		runAtStartUpAction->setChecked(true);
+		mCurrentRunAtStartup = 1;
+	} else {
+		runAtStartUpAction->setChecked(false);
+		mCurrentRunAtStartup = 0;
+	}
+
+	// call back to go side
+	if(mRunAtStartupCallback)
+		go_callback_int(mRunAtStartupCallback, mCurrentRunAtStartup);
 }

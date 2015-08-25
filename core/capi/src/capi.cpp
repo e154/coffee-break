@@ -86,4 +86,61 @@ void SetTimeCallback(SystemTray_ *t, void* callback) {
 	reinterpret_cast<SystemTray *>(t)->setTimeCallback(callback);
 }
 
+// default time
+// ----------------------------------------------------------------------------
+void SetDTime(SystemTray_ *t, int time) {
+	reinterpret_cast<SystemTray *>(t)->setDTimer(time, 0);
+}
+
+int GetDTime(SystemTray_ *t) {
+	return reinterpret_cast<SystemTray *>(t)->getDtime();
+}
+
+void SetDTimeCallback(SystemTray_ *t, void* callback) {
+	reinterpret_cast<SystemTray *>(t)->setDtimeCallback(callback);
+}
+
+// alarm
+// ----------------------------------------------------------------------------
+void SetAlarm(SystemTray_ *t, int state) {
+	reinterpret_cast<SystemTray *>(t)->setAlarm(state, 0);
+}
+
+int GetAlarm(SystemTray_ *t) {
+	return reinterpret_cast<SystemTray *>(t)->getAlarm();
+}
+
+void SetAlarmCallback(SystemTray_ *t, void* callback) {
+	reinterpret_cast<SystemTray *>(t)->setAlarmCallback(callback);
+}
+
+// run at startup
+// ----------------------------------------------------------------------------
+void SetRunAtStartup(SystemTray_ *t, int state) {
+	reinterpret_cast<SystemTray *>(t)->setRunAtStartup(state);
+}
+
+int GetRunAtStartup(SystemTray_ *t) {
+	return reinterpret_cast<SystemTray *>(t)->getRunAtStartup();
+}
+
+void SetRunAtStartupCallback(SystemTray_ *t, void* callback) {
+	reinterpret_cast<SystemTray *>(t)->setRunAtStartupCallback(callback);
+}
+
+// run at startup
+// ----------------------------------------------------------------------------
+void SetAlarmInfo(SystemTray_ *t, char *info) {
+	reinterpret_cast<SystemTray *>(t)->setAlarmInfo(info);
+}
+
+char *GetAlarmInfo(SystemTray_ *t) {
+	return reinterpret_cast<SystemTray *>(t)->getAlarmInfo();
+}
+
+// icon activated callback
+// ----------------------------------------------------------------------------
+void SetIconActivatedCallback(SystemTray_ *t, void* callback) {
+	reinterpret_cast<SystemTray *>(t)->setIconActivatedCallback(callback);
+}
 

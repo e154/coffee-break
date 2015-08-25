@@ -55,9 +55,25 @@ int GetTime(SystemTray_*);
 void SetTimeCallback(SystemTray_*, void*);
 
 // default time
+void SetDTime(SystemTray_*, int time);
+int GetDTime(SystemTray_*);
+void SetDTimeCallback(SystemTray_*, void*);
 
 // alert
+void SetAlarm(SystemTray_*, int time);
+int GetAlarm(SystemTray_*);
+void SetAlarmCallback(SystemTray_*, void*);
 
+// run at startup
+void SetRunAtStartup(SystemTray_*, int time);
+int GetRunAtStartup(SystemTray_*);
+void SetRunAtStartupCallback(SystemTray_*, void*);
+
+// alarm info
+void SetAlarmInfo(SystemTray_*, char *time);
+char *GetAlarmInfo(SystemTray_*);
+
+void SetIconActivatedCallback(SystemTray_*, void*);
 
 #ifdef __cplusplus
 } // extern "C"
