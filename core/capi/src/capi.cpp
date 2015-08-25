@@ -75,7 +75,7 @@ void ShowMessage(SystemTray_*t, char *title, char *msg, int icon) {
 // time
 // ----------------------------------------------------------------------------
 void SetTime(SystemTray_ *t, int time) {
-	reinterpret_cast<SystemTray *>(t)->setTimer(time);
+	reinterpret_cast<SystemTray *>(t)->setTimer(time, 0);
 }
 
 int GetTime(SystemTray_ *t) {

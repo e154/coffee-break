@@ -103,7 +103,7 @@ public:
 	}
 
 	// time
-	void setTimer(int time);
+	void setTimer(int time = 0, QAction *action = 0);
 	int getTime() { return mCurrentTimeLimit; }
 	void setTimeCallback(void* callback) {
 		mTimeCallback = callback;
@@ -116,18 +116,18 @@ private slots:
 	void setAlarm(int state, int value);
 	void showHelp();
 	void setRunAtStartUp();
-	void setTimer(QAction *action);
-	inline void set4hTime() { setTimer(time4hAction); }
-	inline void set3hTime() { setTimer(time3hAction); }
-	inline void set2hTime() { setTimer(time2hAction); }
-	inline void set1hTime() { setTimer(time1hAction); }
-	inline void set45mTime() { setTimer(time45mAction); }
-	inline void set30mTime() { setTimer(time30mAction); }
-	inline void set25mTime() { setTimer(time25mAction); }
-	inline void set20mTime() { setTimer(time20mAction); }
-	inline void set15mTime() { setTimer(time15mAction); }
-	inline void set10mTime() { setTimer(time10mAction); }
-	inline void set5mTime() { setTimer(time5mAction); }
+
+	inline void set4hTime() { setTimer(0, time4hAction); }
+	inline void set3hTime() { setTimer(0, time3hAction); }
+	inline void set2hTime() { setTimer(0, time2hAction); }
+	inline void set1hTime() { setTimer(0, time1hAction); }
+	inline void set45mTime() { setTimer(0, time45mAction); }
+	inline void set30mTime() { setTimer(0, time30mAction); }
+	inline void set25mTime() { setTimer(0, time25mAction); }
+	inline void set20mTime() { setTimer(0, time20mAction); }
+	inline void set15mTime() { setTimer(0, time15mAction); }
+	inline void set10mTime() { setTimer(0, time10mAction); }
+	inline void set5mTime() { setTimer(0, time5mAction); }
 
 private:
 	void createTrayIcon();

@@ -293,17 +293,24 @@ void SystemTray::showHelp() {
 	qDebug() << "show help";
 }
 
-void SystemTray::setTimer(QAction *action) {
+void SystemTray::setTimer(int inTime, QAction *action) {
 
-	int time;
+	int time = 45 * MINUTE;
 	if ( !mTimeStates.empty() ) {
 		actionStates::iterator it = mTimeStates.begin();
 		while ( it != mTimeStates.end()){
-			if ( it->second != action) {
+
+			if (
+					(inTime == 0 && action != 0x0 && it->second != action) ||
+					(inTime != 0 && action == 0x0 && it->first != inTime)
+					)
+			{
 				it->second->setDisabled(false);
 				it->second->setChecked(false);
 				it->second->setCheckable(false);
+
 			} else {
+
 				it->second->setDisabled(true);
 				it->second->setCheckable(true);
 				it->second->setChecked(true);
@@ -313,33 +320,11 @@ void SystemTray::setTimer(QAction *action) {
 		}
 	}
 
-	mCurrentTimeLimit = time;
+	mCurrentTimeLimit = (inTime == 0) ? time : inTime;
 
-	// call back to go program
+	// call back to go side
 	if(mTimeCallback)
 		go_callback_int(mTimeCallback, time);
-}
-
-void SystemTray::setTimer(int time) {
-
-	if ( !mTimeStates.empty() ) {
-		actionStates::iterator it = mTimeStates.begin();
-		while ( it != mTimeStates.end()){
-			if ( it->first != time) {
-				it->second->setDisabled(false);
-				it->second->setChecked(false);
-				it->second->setCheckable(false);
-			} else {
-				it->second->setDisabled(true);
-				it->second->setCheckable(true);
-				it->second->setChecked(true);
-				time = it->first;
-			}
-			++it;
-		}
-	}
-
-	mCurrentTimeLimit = time;
 }
 
 void SystemTray::setRunAtStartUp() {

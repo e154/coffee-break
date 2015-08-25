@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SystemTray_t {
-    QByteArrayData data[26];
-    char stringdata[286];
+    QByteArrayData data[23];
+    char stringdata[261];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -41,29 +41,26 @@ QT_MOC_LITERAL(8, 105, 5),
 QT_MOC_LITERAL(9, 111, 8),
 QT_MOC_LITERAL(10, 120, 8),
 QT_MOC_LITERAL(11, 129, 15),
-QT_MOC_LITERAL(12, 145, 8),
-QT_MOC_LITERAL(13, 154, 8),
-QT_MOC_LITERAL(14, 163, 6),
-QT_MOC_LITERAL(15, 170, 9),
-QT_MOC_LITERAL(16, 180, 9),
-QT_MOC_LITERAL(17, 190, 9),
-QT_MOC_LITERAL(18, 200, 9),
-QT_MOC_LITERAL(19, 210, 10),
-QT_MOC_LITERAL(20, 221, 10),
-QT_MOC_LITERAL(21, 232, 10),
-QT_MOC_LITERAL(22, 243, 10),
-QT_MOC_LITERAL(23, 254, 10),
-QT_MOC_LITERAL(24, 265, 10),
-QT_MOC_LITERAL(25, 276, 9)
+QT_MOC_LITERAL(12, 145, 9),
+QT_MOC_LITERAL(13, 155, 9),
+QT_MOC_LITERAL(14, 165, 9),
+QT_MOC_LITERAL(15, 175, 9),
+QT_MOC_LITERAL(16, 185, 10),
+QT_MOC_LITERAL(17, 196, 10),
+QT_MOC_LITERAL(18, 207, 10),
+QT_MOC_LITERAL(19, 218, 10),
+QT_MOC_LITERAL(20, 229, 10),
+QT_MOC_LITERAL(21, 240, 10),
+QT_MOC_LITERAL(22, 251, 9)
     },
     "SystemTray\0trayAboutToShow\0\0iconActivated\0"
     "QSystemTrayIcon::ActivationReason\0"
     "reason\0setDefaultTimer\0state\0value\0"
     "setAlarm\0showHelp\0setRunAtStartUp\0"
-    "setTimer\0QAction*\0action\0set4hTime\0"
-    "set3hTime\0set2hTime\0set1hTime\0set45mTime\0"
-    "set30mTime\0set25mTime\0set20mTime\0"
-    "set15mTime\0set10mTime\0set5mTime"
+    "set4hTime\0set3hTime\0set2hTime\0set1hTime\0"
+    "set45mTime\0set30mTime\0set25mTime\0"
+    "set20mTime\0set15mTime\0set10mTime\0"
+    "set5mTime"
 };
 #undef QT_MOC_LITERAL
 
@@ -73,7 +70,7 @@ static const uint qt_meta_data_SystemTray[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      18,   14, // methods
+      17,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -81,24 +78,23 @@ static const uint qt_meta_data_SystemTray[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  104,    2, 0x08 /* Private */,
-       3,    1,  105,    2, 0x08 /* Private */,
-       6,    2,  108,    2, 0x08 /* Private */,
-       9,    2,  113,    2, 0x08 /* Private */,
-      10,    0,  118,    2, 0x08 /* Private */,
-      11,    0,  119,    2, 0x08 /* Private */,
-      12,    1,  120,    2, 0x08 /* Private */,
-      15,    0,  123,    2, 0x08 /* Private */,
-      16,    0,  124,    2, 0x08 /* Private */,
-      17,    0,  125,    2, 0x08 /* Private */,
-      18,    0,  126,    2, 0x08 /* Private */,
-      19,    0,  127,    2, 0x08 /* Private */,
-      20,    0,  128,    2, 0x08 /* Private */,
-      21,    0,  129,    2, 0x08 /* Private */,
-      22,    0,  130,    2, 0x08 /* Private */,
-      23,    0,  131,    2, 0x08 /* Private */,
-      24,    0,  132,    2, 0x08 /* Private */,
-      25,    0,  133,    2, 0x08 /* Private */,
+       1,    0,   99,    2, 0x08 /* Private */,
+       3,    1,  100,    2, 0x08 /* Private */,
+       6,    2,  103,    2, 0x08 /* Private */,
+       9,    2,  108,    2, 0x08 /* Private */,
+      10,    0,  113,    2, 0x08 /* Private */,
+      11,    0,  114,    2, 0x08 /* Private */,
+      12,    0,  115,    2, 0x08 /* Private */,
+      13,    0,  116,    2, 0x08 /* Private */,
+      14,    0,  117,    2, 0x08 /* Private */,
+      15,    0,  118,    2, 0x08 /* Private */,
+      16,    0,  119,    2, 0x08 /* Private */,
+      17,    0,  120,    2, 0x08 /* Private */,
+      18,    0,  121,    2, 0x08 /* Private */,
+      19,    0,  122,    2, 0x08 /* Private */,
+      20,    0,  123,    2, 0x08 /* Private */,
+      21,    0,  124,    2, 0x08 /* Private */,
+      22,    0,  125,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -107,7 +103,6 @@ static const uint qt_meta_data_SystemTray[] = {
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    7,    8,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 13,   14,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -134,18 +129,17 @@ void SystemTray::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 3: _t->setAlarm((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 4: _t->showHelp(); break;
         case 5: _t->setRunAtStartUp(); break;
-        case 6: _t->setTimer((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
-        case 7: _t->set4hTime(); break;
-        case 8: _t->set3hTime(); break;
-        case 9: _t->set2hTime(); break;
-        case 10: _t->set1hTime(); break;
-        case 11: _t->set45mTime(); break;
-        case 12: _t->set30mTime(); break;
-        case 13: _t->set25mTime(); break;
-        case 14: _t->set20mTime(); break;
-        case 15: _t->set15mTime(); break;
-        case 16: _t->set10mTime(); break;
-        case 17: _t->set5mTime(); break;
+        case 6: _t->set4hTime(); break;
+        case 7: _t->set3hTime(); break;
+        case 8: _t->set2hTime(); break;
+        case 9: _t->set1hTime(); break;
+        case 10: _t->set45mTime(); break;
+        case 11: _t->set30mTime(); break;
+        case 12: _t->set25mTime(); break;
+        case 13: _t->set20mTime(); break;
+        case 14: _t->set15mTime(); break;
+        case 15: _t->set10mTime(); break;
+        case 16: _t->set5mTime(); break;
         default: ;
         }
     }
@@ -176,13 +170,13 @@ int SystemTray::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 18)
+        if (_id < 17)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 18;
+        _id -= 17;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 18)
+        if (_id < 17)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 18;
+        _id -= 17;
     }
     return _id;
 }
