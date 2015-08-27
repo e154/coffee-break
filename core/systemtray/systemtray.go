@@ -5,6 +5,11 @@ import (
     . "../capi"
     "fmt"
     "unsafe"
+    settings "../settings"
+)
+
+var (
+    stPtr *settings.Settings
 )
 
 func TimeCallback(x C.int) { fmt.Println("time callback", x) }
@@ -17,6 +22,7 @@ func Run() {
     NewGuiApplication()
 
     systray := GetSystemTray()
+    stPtr.SysTray = systray
     systray.SetIcon("static_source/images/icons/watch-red.png")
     systray.SetToolTip("Watcher")
     systray.SetVisible(true)
@@ -39,3 +45,6 @@ func Run() {
     ApplicationExec()
 }
 
+func init() {
+    stPtr = settings.SettingsPtr()
+}
