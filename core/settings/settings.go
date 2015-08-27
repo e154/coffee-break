@@ -42,21 +42,15 @@ type Settings struct {
     UpTime time.Duration
     cfg config.ConfigContainer
     dir string
-    Stage string
     Last_stage string
     Ready bool
     Paused bool
     SoundEnabled bool
     RunAtStartup bool
-    Idle_work_title string
-    Idle_work_body string
-    Idle_work_image string
-    Work_idle_title string
-    Work_idle_body string
-    Work_idle_image string
-    Unfinished_idle_title string
-    Unfinished_idle_body string
-    Unfinished_idle_image string
+    Message_title string
+    Message_body string
+    Message_image string
+    Default_timer time.Duration
     Alarm_file string
     Maximum_notify int
     Notify_count int
@@ -96,16 +90,10 @@ func (s *Settings) Init() *Settings {
     s.IdleConst = 900 * time.Second // 15min
     s.Tick = 1 * time.Second
     s.Protect = 30 * time.Second
-    s.Stage = "work" // work|idle|signal
-    s.Idle_work_title = "Внимание"
-    s.Idle_work_body = "Ты отдыхаешь уже {idle_time} пора приниматся за работу!"
-    s.Idle_work_image = ""
-    s.Work_idle_title = "Внимание"
-    s.Work_idle_body = "Ты работешь уже {work_time}, иди отдохни, выпей чаю!"
-    s.Work_idle_image = ""
-    s.Unfinished_idle_title = "Внимание"
-    s.Unfinished_idle_body = "{idle} ещё не прошло, иди отдохни, выпей чаю!"
-    s.Unfinished_idle_image = ""
+    s.Message_title = "Внимание"
+    s.Message_body = "Ты отдыхаешь уже {idle_time} пора приниматся за работу!"
+    s.Message_image = ""
+    s.Default_timer = 2700 * time.Second
     s.Alarm_file = "aperture_logo_bells_01_01.wav"
     s.Webserver_address = "0.0.0.0:8080"
     s.Maximum_notify = 3
@@ -150,15 +138,10 @@ func (s *Settings) Save() (*Settings, error) {
     cfg.Set("idle", fmt.Sprintf("%v", s.IdleConst.Seconds()))
     cfg.Set("work", fmt.Sprintf("%v", s.WorkConst.Seconds()))
     cfg.Set("protect", fmt.Sprintf("%v", s.Protect.Seconds()))
-    cfg.Set("idle_work_title", s.Idle_work_title)
-    cfg.Set("idle_work_body", s.Idle_work_body)
-    cfg.Set("idle_work_image", s.Idle_work_image)
-    cfg.Set("work_idle_title", s.Work_idle_title)
-    cfg.Set("work_idle_body", s.Work_idle_body)
-    cfg.Set("work_idle_image", s.Work_idle_image)
-    cfg.Set("unfinished_idle_title", s.Unfinished_idle_title)
-    cfg.Set("unfinished_idle_body", s.Unfinished_idle_body)
-    cfg.Set("unfinished_idle_image", s.Unfinished_idle_image)
+    cfg.Set("idle_work_title", s.Message_title)
+    cfg.Set("idle_work_body", s.Message_body)
+    cfg.Set("idle_work_image", s.Message_image)
+    cfg.Set("default_timer", fmt.Sprintf("%v", s.Default_timer.Seconds()))
     cfg.Set("alarm_file", s.Alarm_file)
     cfg.Set("webserver_address", s.Webserver_address)
     cfg.Set("maximum_notify", fmt.Sprintf("%d", s.Maximum_notify))
@@ -197,15 +180,10 @@ func (s *Settings) Load() (*Settings, error) {
     s.IdleConst = second("idle")
     s.WorkConst = second("work")
     s.Protect = second("protect")
-    s.Idle_work_title = cfg.String("idle_work_title")
-    s.Idle_work_body = cfg.String("idle_work_body")
-    s.Idle_work_image = cfg.String("idle_work_image")
-    s.Work_idle_title = cfg.String("work_idle_title")
-    s.Work_idle_body = cfg.String("work_idle_body")
-    s.Work_idle_image = cfg.String("work_idle_image")
-    s.Unfinished_idle_title = cfg.String("unfinished_idle_title")
-    s.Unfinished_idle_body = cfg.String("unfinished_idle_body")
-    s.Unfinished_idle_image = cfg.String("unfinished_idle_image")
+    s.Message_title = cfg.String("message_title")
+    s.Message_body = cfg.String("message_body")
+    s.Message_image = cfg.String("message_image")
+    s.Default_timer = second("default_timer")
     s.Alarm_file = cfg.String("alarm_file")
     s.Webserver_address = cfg.String("webserver_address")
     s.Maximum_notify, _ = cfg.Int("maximum_notify")

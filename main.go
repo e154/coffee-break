@@ -1,13 +1,15 @@
 package main
 
 import (
-//    "./core"
-    "./core/systemtray"
+    "./core"
+    . "./core/capi"
 )
 
 func main() {
 
-//    core.Run()
+    NewGuiApplication()
 
-    systemtray.Run()
+    core.Run()
+
+    ApplicationExec()
 }

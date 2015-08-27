@@ -1,123 +1,54 @@
 package core
 
 import (
+    "C"
     "fmt"
+    "unsafe"
     "time"
-    "strings"
-    "./notify"
-    "./webserver"
-    "./audio"
-    "./xprint"
+
+    "github.com/looplab/fsm"
     st "./settings"
+    api "./capi"
+    "./audio"
+    "./webserver"
+    "./xprint"
+)
+
+const (
+    DoubleClick int = 2
+    SingleClick int = 3
 )
 
 var (
     isWork bool
-    signal_count int
-    tmp_idle_timer time.Duration
+    watcher *Watcher
     settings *st.Settings
+    systray api.SystemTray
     player *audio.Player
 )
 
-func fsm() {
-    isWork = settings.Idle < time.Second
-    protected := settings.Idle < settings.Protect
-
-    if settings.Paused {
-        settings.Work += settings.Tick
-        return
-    }
-
-    switch settings.Stage {
-        case "work":
-            settings.Work += settings.Tick
-            settings.TotalWork += settings.Tick
-            if isWork {
-                if settings.Work > settings.WorkConst {
-                    send_signal("work_idle")
-                }
-
-            } else {
-
-                if !protected {
-                    settings.Last_stage = settings.Stage
-                    settings.Stage = "idle"
-                }
-            }
-        case "idle":
-            tmp_idle_timer += settings.Tick
-            settings.TotalIdle += settings.Tick
-            if !isWork {
-                if settings.Idle > settings.IdleConst {
-                    send_signal("idle_work")
-                }
-
-            } else {
-                if tmp_idle_timer < settings.IdleConst {
-                    send_signal("unfinished_idle")
-                } else {
-                    tmp_idle_timer = 0
-                    settings.Work = 0
-                    settings.Last_stage = settings.Stage
-                    settings.Stage = "work"
-                }
-            }
-    }
-
-//    fmt.Printf("\n")
-//    fmt.Printf("settings.Idle: %v\n", settings.Idle)
-//    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
-//    fmt.Printf("protected: %t\n", protected)
-//    fmt.Printf("settings.Protect: %v\n", settings.Protect)
-//    fmt.Printf("settings.Stage: %s\n", settings.Stage)
-//    fmt.Printf("isWork: %t\n", isWork)
-//    fmt.Printf("Work: %v\n", settings.Work)
-//    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
-//    fmt.Printf("IdleConst: %v\n", settings.IdleConst)
-//    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
-//    fmt.Printf("Notify_count: %d\n", settings.Notify_count)
+type Watcher struct {
+    FSM *fsm.FSM
 }
 
-func strConverter(in string) (out string) {
-
-    out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", settings.Idle), -1)
-    out = strings.Replace(out, "{work_time}", fmt.Sprintf("%v", settings.Work), -1)
-    out = strings.Replace(out, "{idle}", fmt.Sprintf("%v", settings.IdleConst), -1)
-    return
+func (w *Watcher) enterPause(e *fsm.Event) {
+    systray.SetIcon("static_source/images/icons/watch-grey.png")
+    settings.Paused = true
 }
 
-func send_signal(stage string) {
+func (w *Watcher) leavePause(e *fsm.Event) {
+    systray.SetIcon("static_source/images/icons/watch-blue.png")
+    settings.Paused = false
+}
 
-    if signal_count > 10 {
-        signal_count = 0
-    } else {
-        signal_count++
-        return
-    }
+func (w *Watcher) enterWork(e *fsm.Event) {
 
-    if settings.Notify_count > settings.Maximum_notify {
-        if settings.Last_stage != settings.Stage {
-            settings.Notify_count = 0
-        }
-        return
-    }
+}
 
-    settings.Notify_count++
+//func (w *Watcher) enterWork(e *fsm.Event) {}
 
-    switch stage {
-        case "idle_work":
-            go notify.Show(strConverter(settings.Idle_work_title), strConverter(settings.Idle_work_body), strConverter(settings.Idle_work_image))
-
-        case "work_idle":
-            go notify.Show(strConverter(settings.Work_idle_title), strConverter(settings.Work_idle_body), strConverter(settings.Work_idle_image))
-
-        case "unfinished_idle":
-            go notify.Show(strConverter(settings.Unfinished_idle_title), strConverter(settings.Unfinished_idle_body), strConverter(settings.Unfinished_idle_image))
-    }
-
-    if settings.SoundEnabled {
-        player.Play()
-    }
+func (w *Watcher) enterState(e *fsm.Event) {
+    fmt.Printf("Enter state %s\n", e.Dst)
 }
 
 func Run() {
@@ -127,13 +58,111 @@ func Run() {
     settings.Init()
     settings.Load()
 
-    // audio
+    systrayInit()
+    playerInit()
+    loopInit()
+    webserverInit()
+
+    // watcher init
+    watcher = new(Watcher)
+
+    watcher.FSM = fsm.NewFSM(
+        "paused",
+        fsm.Events{
+            // Рабочее состояние, до момента "Х" более 5 минут
+            {Name: "work", Src: []string{"paused"}, Dst: "worked"},
+
+            // Рабочее стостояние, до момента "Х" менее 5 минут
+            {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
+
+            // Рабочее стостояние, до момента "Х" менее 1 минут
+            {Name: "work_warning_lock", Src: []string{"work_locked"}, Dst: "work_warning_locked"},
+
+            // Момент "Х"
+            {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
+
+            // Пауза, все процессы остановлены
+            {Name: "pause", Src: []string{"worked"}, Dst: "paused"},
+        },
+        fsm.Callbacks{
+            "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
+            "leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
+            "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
+            "enter_work": func(e *fsm.Event) { watcher.enterWork(e) },
+        },
+    )
+
+    err := watcher.FSM.Event("work")
+    if err != nil {
+        fmt.Println(err)
+    }
+
+    err = watcher.FSM.Event("pause")
+    if err != nil {
+        fmt.Println(err)
+    }
+}
+
+func loop() {
+    isWork = settings.Idle < time.Second
+//    protected := settings.Idle < settings.Protect
+
+    if settings.Paused {
+        settings.Work += settings.Tick
+        return
+    }
+
+    switch watcher.FSM.Current() {
+        case "worked":
+            settings.Work += settings.Tick
+            settings.TotalWork += settings.Tick
+
+
+        case "paused":
+            //
+    }
+}
+
+func systrayInit() {
+
+    seconds := func(d time.Duration) int {
+        ns := d.Nanoseconds()
+        return int(ns / 1000000000)
+    }
+
+    systray = api.GetSystemTray()
+    systray.SetIcon("static_source/images/icons/watch-red.png")
+    systray.SetToolTip("Watcher")
+
+    var TimeCallbackFunc = TimeCallback
+    var DTimeCallbackFunc = DTimeCallback
+    var IconActivatedCallbackFunc = IconActivatedCallback
+    var RunAtStartupCallbackFunc = RunAtStartupCallback
+
+    systray.SetTimeCallback(unsafe.Pointer(&TimeCallbackFunc))
+    systray.SetDTimeCallback(unsafe.Pointer(&DTimeCallbackFunc))
+    systray.SetIconActivatedCallback(unsafe.Pointer(&IconActivatedCallbackFunc))
+    systray.SetRunAtStartupCallback(unsafe.Pointer(&RunAtStartupCallbackFunc))
+
+    systray.SetVisible(true)
+
+    // set value
+    if settings != nil && settings.Default_timer != 0 {
+        systray.SetDTime( seconds(settings.Default_timer) )
+    }
+
+}
+
+func playerInit() {
+
     player = audio.PlayerPtr()
     if settings.Alarm_file != "" {
         player.File("static_source/audio/" + settings.Alarm_file)
     }
+}
 
-    // timer
+func loopInit() {
+
     go func() {
         ticker := time.Tick(settings.Tick)
         for {
@@ -141,10 +170,40 @@ func Run() {
             case <-ticker:
                 settings.UpTime = time.Now().Sub(settings.StartTime)
                 go xprint.Update()
-                fsm()
+                loop()
             }
         }
     }()
+}
 
+func webserverInit() {
     webserver.Run(settings.Webserver_address)
 }
+
+// systray callbacks
+func TimeCallback(x C.int) {
+
+}
+
+func DTimeCallback(x C.int) {
+
+    settings.Default_timer = time.Duration(x) * time.Second
+    settings.Save()
+}
+
+func IconActivatedCallback(x C.int) {
+
+    switch int(x) {
+        case DoubleClick:
+            if watcher.FSM.Current() != "paused" {
+                watcher.FSM.Event("pause")
+            } else {
+                watcher.FSM.Event("work")
+            }
+
+        case SingleClick:
+
+    }
+}
+
+func RunAtStartupCallback(x C.int) { fmt.Println("run at startup callback", x) }
