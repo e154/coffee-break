@@ -33,7 +33,7 @@ type Settings struct {
     Idle time.Duration
     Work time.Duration
     IdleConst time.Duration
-    WorkConst time.Duration
+    WorkConst time.Duration         // Таймер рабочег времени
     TotalIdle time.Duration
     TotalWork time.Duration
     Tick time.Duration
@@ -50,7 +50,7 @@ type Settings struct {
     Message_title string
     Message_body string
     Message_image string
-    Default_timer time.Duration
+    Default_timer time.Duration         // Дефолтный таймер рабочего времени
     Alarm_file string
     Maximum_notify int
     Notify_count int

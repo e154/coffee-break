@@ -15,12 +15,13 @@ import (
 )
 
 const (
-    DoubleClick int = 2
-    SingleClick int = 3
+    DoubleClick = 2
+    SingleClick = 3
 )
 
 var (
     isWork bool
+    tmp_idle_timer time.Duration
     watcher *Watcher
     settings *st.Settings
     systray api.SystemTray
@@ -43,6 +44,10 @@ func (w *Watcher) leavePause(e *fsm.Event) {
 
 func (w *Watcher) enterWork(e *fsm.Event) {
 
+}
+
+func (w *Watcher) enterWorkLock(e *fsm.Event) {
+    systray.SetIcon("static_source/images/icons/watch-red.png")
 }
 
 //func (w *Watcher) enterWork(e *fsm.Event) {}
@@ -82,22 +87,19 @@ func Run() {
             {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
 
             // Пауза, все процессы остановлены
-            {Name: "pause", Src: []string{"worked"}, Dst: "paused"},
+            {Name: "pause", Src: []string{"worked, work_locked"}, Dst: "paused"},
         },
         fsm.Callbacks{
             "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
             "leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
             "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
             "enter_work": func(e *fsm.Event) { watcher.enterWork(e) },
+            "enter_work_locked": func(e *fsm.Event) { watcher.enterWorkLock(e) },
         },
     )
 
-    err := watcher.FSM.Event("work")
-    if err != nil {
-        fmt.Println(err)
-    }
 
-    err = watcher.FSM.Event("pause")
+    err := watcher.FSM.Event("pause")
     if err != nil {
         fmt.Println(err)
     }
@@ -105,7 +107,7 @@ func Run() {
 
 func loop() {
     isWork = settings.Idle < time.Second
-//    protected := settings.Idle < settings.Protect
+    protected := settings.Idle < settings.Protect
 
     if settings.Paused {
         settings.Work += settings.Tick
@@ -116,10 +118,35 @@ func loop() {
         case "worked":
             settings.Work += settings.Tick
             settings.TotalWork += settings.Tick
+            if isWork {
+                if settings.Work > (settings.WorkConst - 5 * time.Minute){
+                    watcher.FSM.Event("work_lock")
+                }
+            } else {
+                if !protected {
+                    watcher.FSM.Event("pause")
+                }
+            }
+
+        case "work_lockd":
 
 
         case "paused":
-            //
+            tmp_idle_timer += settings.Tick
+            settings.TotalIdle += settings.Tick
+
+            if !isWork {
+
+            } else {
+                if tmp_idle_timer < settings.IdleConst {
+
+                } else {
+                    tmp_idle_timer = 0
+                    settings.Work = 0
+                    watcher.FSM.Event("work")
+                }
+            }
+
     }
 }
 
@@ -183,6 +210,7 @@ func webserverInit() {
 // systray callbacks
 func TimeCallback(x C.int) {
 
+    settings.WorkConst = time.Duration(x) * time.Second
 }
 
 func DTimeCallback(x C.int) {
