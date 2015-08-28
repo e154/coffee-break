@@ -5,11 +5,13 @@ import (
     "fmt"
     "unsafe"
     "time"
+    "strings"
 
     "github.com/looplab/fsm"
     st "./settings"
     api "./capi"
     "./audio"
+    "./notify"
     "./webserver"
     "./xprint"
 )
@@ -40,17 +42,23 @@ func (w *Watcher) enterPause(e *fsm.Event) {
 func (w *Watcher) leavePause(e *fsm.Event) {
     systray.SetIcon("static_source/images/icons/watch-blue.png")
     settings.Paused = false
+    settings.Work = 0
 }
 
 func (w *Watcher) enterWork(e *fsm.Event) {
-
+    settings.Work = 0
+    systray.SetIcon("static_source/images/icons/watch-blue.png")
 }
 
 func (w *Watcher) enterWorkLock(e *fsm.Event) {
     systray.SetIcon("static_source/images/icons/watch-red.png")
+    showNotify()
 }
 
-//func (w *Watcher) enterWork(e *fsm.Event) {}
+func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
+    systray.SetIcon("static_source/images/icons/watch-red.png")
+    showNotify()
+}
 
 func (w *Watcher) enterState(e *fsm.Event) {
     fmt.Printf("Enter state %s\n", e.Dst)
@@ -75,7 +83,7 @@ func Run() {
         "paused",
         fsm.Events{
             // Рабочее состояние, до момента "Х" более 5 минут
-            {Name: "work", Src: []string{"paused"}, Dst: "worked"},
+            {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked"}, Dst: "worked"},
 
             // Рабочее стостояние, до момента "Х" менее 5 минут
             {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
@@ -87,21 +95,23 @@ func Run() {
             {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
 
             // Пауза, все процессы остановлены
-            {Name: "pause", Src: []string{"worked, work_locked"}, Dst: "paused"},
+            {Name: "pause", Src: []string{"worked", "work_locked"}, Dst: "paused"},
         },
         fsm.Callbacks{
             "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
             "leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
             "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
-            "enter_work": func(e *fsm.Event) { watcher.enterWork(e) },
+            "enter_worked": func(e *fsm.Event) { watcher.enterWork(e) },
             "enter_work_locked": func(e *fsm.Event) { watcher.enterWorkLock(e) },
+            "enter_work_warning_locked": func(e *fsm.Event) { watcher.enterWorkWarningLock(e) },
         },
     )
 
-
-    err := watcher.FSM.Event("pause")
-    if err != nil {
-        fmt.Println(err)
+    if settings.RunAtStartup {
+        err := watcher.FSM.Event("work")
+        if err != nil {
+            fmt.Println(err)
+        }
     }
 }
 
@@ -114,13 +124,16 @@ func loop() {
         return
     }
 
+    settings.Work += settings.Tick
+    settings.TotalWork += settings.Tick
+
     switch watcher.FSM.Current() {
         case "worked":
-            settings.Work += settings.Tick
-            settings.TotalWork += settings.Tick
             if isWork {
-                if settings.Work > (settings.WorkConst - 5 * time.Minute){
+                if settings.Work >= (settings.WorkConst - 5 * time.Minute) {
                     watcher.FSM.Event("work_lock")
+                } else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
+                    watcher.FSM.Event("work_warning_lock")
                 }
             } else {
                 if !protected {
@@ -128,15 +141,27 @@ func loop() {
                 }
             }
 
-        case "work_lockd":
+        case "work_locked":
+            if settings.Work < (settings.WorkConst - 5 * time.Minute) {
+                watcher.FSM.Event("work")
+            }
 
+        case "work_warning_locked":
+            if settings.Work < (settings.WorkConst - 1 * time.Minute) {
+                watcher.FSM.Event("work")
+            }
 
         case "paused":
+
+
+        case "locked":
             tmp_idle_timer += settings.Tick
             settings.TotalIdle += settings.Tick
 
             if !isWork {
+                if settings.Idle > settings.IdleConst {
 
+                }
             } else {
                 if tmp_idle_timer < settings.IdleConst {
 
@@ -158,7 +183,7 @@ func systrayInit() {
     }
 
     systray = api.GetSystemTray()
-    systray.SetIcon("static_source/images/icons/watch-red.png")
+    systray.SetIcon("static_source/images/icons/watch-grey.png")
     systray.SetToolTip("Watcher")
 
     var TimeCallbackFunc = TimeCallback
@@ -176,8 +201,14 @@ func systrayInit() {
     // set value
     if settings != nil && settings.Default_timer != 0 {
         systray.SetDTime( seconds(settings.Default_timer) )
+        systray.SetTime( seconds(settings.Default_timer) )
     }
 
+    if settings.RunAtStartup {
+        systray.SetRunAtStartup(1)
+    } else {
+        systray.SetRunAtStartup(0)
+    }
 }
 
 func playerInit() {
@@ -209,7 +240,6 @@ func webserverInit() {
 
 // systray callbacks
 func TimeCallback(x C.int) {
-
     settings.WorkConst = time.Duration(x) * time.Second
 }
 
@@ -221,11 +251,14 @@ func DTimeCallback(x C.int) {
 
 func IconActivatedCallback(x C.int) {
 
+    fmt.Println(watcher.FSM.Current())
     switch int(x) {
         case DoubleClick:
             if watcher.FSM.Current() != "paused" {
+                fmt.Println("to pause")
                 watcher.FSM.Event("pause")
             } else {
+                fmt.Println("to work")
                 watcher.FSM.Event("work")
             }
 
@@ -234,4 +267,30 @@ func IconActivatedCallback(x C.int) {
     }
 }
 
-func RunAtStartupCallback(x C.int) { fmt.Println("run at startup callback", x) }
+func RunAtStartupCallback(x C.int) {
+    if int(x) == 1 {
+        settings.RunAtStartup = true
+    } else {
+        settings.RunAtStartup = false
+    }
+
+    settings.Save()
+}
+
+func strConverter(in string) (out string) {
+
+    out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", settings.Idle), -1)
+    out = strings.Replace(out, "{work_time}", fmt.Sprintf("%v", settings.Work), -1)
+    out = strings.Replace(out, "{idle}", fmt.Sprintf("%v", settings.IdleConst), -1)
+    out = strings.Replace(out, "{time_to_lock}", fmt.Sprintf("%v", settings.WorkConst - settings.Work), -1)
+    return
+}
+
+func showNotify() {
+
+    if settings.Work <= ( time.Duration(3) * time.Minute) {
+        return
+    }
+
+    go notify.Show(strConverter(settings.Message_title), strConverter(settings.Message_body), strConverter(settings.Message_image))
+}

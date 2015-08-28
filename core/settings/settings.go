@@ -56,6 +56,7 @@ type Settings struct {
     Notify_count int
     Webserver_address string
     SysTray capi.SystemTray
+    Run_at_startup bool
 }
 
 func (s *Settings) GetHomeDir() (string, error) {
@@ -91,7 +92,7 @@ func (s *Settings) Init() *Settings {
     s.Tick = 1 * time.Second
     s.Protect = 30 * time.Second
     s.Message_title = "Внимание"
-    s.Message_body = "Ты отдыхаешь уже {idle_time} пора приниматся за работу!"
+    s.Message_body = "Вы работаете уже {work_time}, через {time_to_lock} экран будет заблокирован, позаботьтесь о сохранности данных!"
     s.Message_image = ""
     s.Default_timer = 2700 * time.Second
     s.Alarm_file = "aperture_logo_bells_01_01.wav"
@@ -138,9 +139,9 @@ func (s *Settings) Save() (*Settings, error) {
     cfg.Set("idle", fmt.Sprintf("%v", s.IdleConst.Seconds()))
     cfg.Set("work", fmt.Sprintf("%v", s.WorkConst.Seconds()))
     cfg.Set("protect", fmt.Sprintf("%v", s.Protect.Seconds()))
-    cfg.Set("idle_work_title", s.Message_title)
-    cfg.Set("idle_work_body", s.Message_body)
-    cfg.Set("idle_work_image", s.Message_image)
+    cfg.Set("message_title", s.Message_title)
+    cfg.Set("message_body", s.Message_body)
+    cfg.Set("message_image", s.Message_image)
     cfg.Set("default_timer", fmt.Sprintf("%v", s.Default_timer.Seconds()))
     cfg.Set("alarm_file", s.Alarm_file)
     cfg.Set("webserver_address", s.Webserver_address)
