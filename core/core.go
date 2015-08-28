@@ -85,10 +85,10 @@ func Run() {
             // Рабочее состояние, до момента "Х" более 5 минут
             {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked"}, Dst: "worked"},
 
-            // Рабочее стостояние, до момента "Х" менее 5 минут
+            // Рабочее состояние, до момента "Х" менее 5 минут
             {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
 
-            // Рабочее стостояние, до момента "Х" менее 1 минут
+            // Рабочее состояние, до момента "Х" менее 1 минут
             {Name: "work_warning_lock", Src: []string{"work_locked"}, Dst: "work_warning_locked"},
 
             // Момент "Х"
@@ -182,7 +182,9 @@ func systrayInit() {
         return int(ns / 1000000000)
     }
 
+    thread := api.ApplicationThread()
     systray = api.GetSystemTray()
+    systray.MoveToThread(thread)
     systray.SetIcon("static_source/images/icons/watch-grey.png")
     systray.SetToolTip("Watcher")
 

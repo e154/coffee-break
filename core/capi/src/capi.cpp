@@ -49,6 +49,7 @@ void ApplicationExec() { qApp->exec(); }
 void ApplicationExit() { qApp->exit(0); }
 void ApplicationFlushAll() { qApp->processEvents(); }
 QApp_ *ApplicationPtr() { return qApp; };
+QThread_ *ApplicationThread() { return qApp->thread(); }
 
 // singleton
 // ----------------------------------------------------------------------------
@@ -70,6 +71,10 @@ void SetTrayVisible(SystemTray_*t, bool trigger) {
 
 void ShowMessage(SystemTray_*t, char *title, char *msg, int icon) {
 	reinterpret_cast<SystemTray *>(t)->showMessage(QString(title), QString(msg), QSystemTrayIcon::MessageIcon(icon));
+}
+
+void MoveToThread(SystemTray_*t, QThread_ *thread) {
+	reinterpret_cast<SystemTray *>(t)->moveToThread(reinterpret_cast<QThread *>(thread));
 }
 
 // time

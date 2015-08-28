@@ -34,6 +34,7 @@ enum MessageIcon { NoIcon, Information, Warning, Critical };
 
 typedef void SystemTray_;
 typedef void QApp_;
+typedef void QThread_;
 
 // Application
 void NewGuiApplication();
@@ -41,6 +42,7 @@ void ApplicationExec();
 void ApplicationExit();
 void ApplicationFlushAll();
 QApp_ *ApplicationPtr();
+QThread_ *ApplicationThread();
 
 // QSystemTrayIcon
 SystemTray_ *GetSystemTray();
@@ -48,6 +50,7 @@ void SetTrayIcon(SystemTray_*, char *img);
 void SetTrayToolTip(SystemTray_*, char *tooltip);
 void SetTrayVisible(SystemTray_*, bool trigger);
 void ShowMessage(SystemTray_*, char *title, char *msg, int icon);
+void MoveToThread(SystemTray_*, QThread_ *thread);
 
 // time
 void SetTime(SystemTray_*, int time);

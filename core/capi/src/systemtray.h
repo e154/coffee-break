@@ -138,6 +138,9 @@ public:
 		mIconActivatedCallback = callback;
 	}
 
+	// thread
+	void setThread(QThread *thread) { this->moveToThread(thread); }
+
 private slots:
 	void trayAboutToShow();
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);

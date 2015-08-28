@@ -21,6 +21,7 @@ func ApplicationExec() { C.ApplicationExec() }
 func ApplicationExit() { C.ApplicationExit() }
 func ApplicationFlushAll() { C.ApplicationFlushAll() }
 func ApplicationPtr() unsafe.Pointer { return C.ApplicationPtr() }
+func ApplicationThread() unsafe.Pointer { return C.ApplicationThread() }
 
 /*--------------------------------------------------------
 /* SystemTray
@@ -53,6 +54,7 @@ func (t SystemTray) GetRunAtStartup() int { return int(C.GetRunAtStartup(t.addr)
 func (t SystemTray) SetAlarmInfo(info string) { C.SetAlarmInfo((t.addr), C.CString(info)) }
 func (t SystemTray) GetAlarmInfo() string { return C.GoString(C.GetAlarmInfo(t.addr)) }
 func (t SystemTray) SetIconActivatedCallback(callback unsafe.Pointer) { C.SetIconActivatedCallback(t.addr, callback) }
+func (t SystemTray) MoveToThread(thread unsafe.Pointer) { C.MoveToThread(t.addr, thread) }
 
 //export go_callback_int
 func go_callback_int(pfoo unsafe.Pointer, p1 C.int) {
