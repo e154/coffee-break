@@ -23,7 +23,6 @@ const (
 
 var (
     isWork bool
-    tmp_lock_timer time.Duration
     watcher *Watcher
     settings *st.Settings
     systray api.SystemTray
@@ -68,11 +67,12 @@ func (w *Watcher) enterState(e *fsm.Event) {
 
 func (w *Watcher) enterLock(e *fsm.Event) {
     window.Show()
+    systray.SetIcon("static_source/images/icons/watch-red.png")
 }
 
 func (w *Watcher) leaveLock(e *fsm.Event) {
     window.Hidde()
-    tmp_lock_timer = 0
+    settings.Lock = 0
     settings.Work = 0
 }
 
@@ -131,10 +131,10 @@ func loop() {
 
 
         case "locked":
-            tmp_lock_timer += settings.Tick
+            settings.Lock += settings.Tick
             settings.TotalIdle += settings.Tick
 
-            if tmp_lock_timer > settings.LockConst {
+            if settings.Lock > settings.LockConst {
                 watcher.FSM.Event("work")
             }
 
@@ -278,7 +278,7 @@ func fsmInit() {
         {Name: "work_warning_lock", Src: []string{"work_locked"}, Dst: "work_warning_locked"},
 
         // Момент "Х"
-        {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
+        {Name: "lock", Src: []string{"work_warning_locked", "paused"}, Dst: "locked"},
 
         // Пауза, все процессы остановлены
         {Name: "pause", Src: []string{"worked", "work_locked"}, Dst: "paused"},
@@ -296,7 +296,7 @@ func fsmInit() {
     )
 
     if settings.RunAtStartup {
-        err := watcher.FSM.Event("work")
+        err := watcher.FSM.Event("lock")
         if err != nil {
             fmt.Println(err)
         }

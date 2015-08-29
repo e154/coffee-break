@@ -2,8 +2,8 @@
 
 angular
   .module('appControllers')
-  .controller 'lockCtrl', ['$scope'
-  ($scope) ->
+  .controller 'lockCtrl', ['$scope', 'Connect'
+  ($scope, Connect) ->
     vm = this
 
   ]

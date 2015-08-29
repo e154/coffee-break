@@ -62,6 +62,7 @@ func (h *hub) run() {
 //				go cpuStat()
 //				go memStat()
 				go uptime()
+				go timeinfo();
 			}
 
 			// запрос Отменить регистрацию

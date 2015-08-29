@@ -57,6 +57,7 @@ type Settings struct {
     Webserver_address string
     SysTray capi.SystemTray
     Run_at_startup bool
+    Lock time.Duration
 }
 
 func (s *Settings) GetHomeDir() (string, error) {
