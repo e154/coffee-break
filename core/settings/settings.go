@@ -88,7 +88,7 @@ func (s *Settings) Init() *Settings {
     s.SoundEnabled = true
     s.RunAtStartup = true
     s.WorkConst = 2700 * time.Second // 45min
-    s.LockConst = 900 * time.Second // 15min
+    s.LockConst = 600 * time.Second // 10min
     s.Tick = 1 * time.Second
     s.Protect = 30 * time.Second
     s.Message_title = "Внимание"
