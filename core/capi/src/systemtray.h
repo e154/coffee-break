@@ -51,7 +51,7 @@ private:
 	QAction *runAtStartUpAction;
 	QAction *dTimerAction;
 	QAction *AlarmSoundAction;
-	QAction *helpAction;
+//	QAction *helpAction;
 	QAction *alarmInfo;
 
 	QAction *time4hAction;
@@ -144,7 +144,7 @@ public:
 private slots:
 	void trayAboutToShow();
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
-	void showHelp() {};
+//	void showHelp() {};
 
 	// time
 	inline void set4hTime() { setTimer(0, time4hAction); }

@@ -35,6 +35,7 @@ enum MessageIcon { NoIcon, Information, Warning, Critical };
 typedef void SystemTray_;
 typedef void QApp_;
 typedef void QThread_;
+typedef void MainWindow_;
 
 // Application
 void NewGuiApplication();
@@ -77,6 +78,12 @@ void SetAlarmInfo(SystemTray_*, char *time);
 char *GetAlarmInfo(SystemTray_*);
 
 void SetIconActivatedCallback(SystemTray_*, void*);
+
+// MainWindow
+MainWindow_ *GetMainWindow();
+void MainWindowShow(MainWindow_ *w);
+void MainWindowHidde(MainWindow_ *w);
+void MainWindowUrl(MainWindow_ *w, char *url);
 
 #ifdef __cplusplus
 } // extern "C"

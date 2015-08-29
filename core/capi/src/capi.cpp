@@ -32,6 +32,7 @@
 #include <QMenu>
 
 #include "systemtray.h"
+#include "mainwindow.h"
 #include "capi.h"
 
 // Application
@@ -147,5 +148,23 @@ char *GetAlarmInfo(SystemTray_ *t) {
 // ----------------------------------------------------------------------------
 void SetIconActivatedCallback(SystemTray_ *t, void* callback) {
 	reinterpret_cast<SystemTray *>(t)->setIconActivatedCallback(callback);
+}
+
+// Window
+// ----------------------------------------------------------------------------
+MainWindow_ *GetMainWindow() {
+	return new MainWindow();
+}
+
+void MainWindowShow(MainWindow_ *w) {
+	reinterpret_cast<MainWindow *>(w)->show();
+}
+
+void MainWindowHidde(MainWindow_ *w) {
+	reinterpret_cast<MainWindow *>(w)->hide();
+}
+
+void MainWindowUrl(MainWindow_ *w, char *url) {
+	reinterpret_cast<MainWindow *>(w)->url(url);
 }
 

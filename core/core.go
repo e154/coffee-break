@@ -28,6 +28,7 @@ var (
     settings *st.Settings
     systray api.SystemTray
     player *audio.Player
+    window api.MainWindow
 )
 
 type Watcher struct {
@@ -53,6 +54,7 @@ func (w *Watcher) enterWork(e *fsm.Event) {
 func (w *Watcher) enterWorkLock(e *fsm.Event) {
     systray.SetIcon("static_source/images/icons/watch-red.png")
     showNotify()
+    window.Show()
 }
 
 func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
@@ -62,6 +64,14 @@ func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
 
 func (w *Watcher) enterState(e *fsm.Event) {
     fmt.Printf("Enter state %s\n", e.Dst)
+}
+
+func (w *Watcher) enterLock(e *fsm.Event) {
+    window.Show()
+}
+
+func (w *Watcher) leaveLock(e *fsm.Event) {
+    window.Hidde()
 }
 
 func Run() {
@@ -75,44 +85,8 @@ func Run() {
     playerInit()
     loopInit()
     webserverInit()
-
-    // watcher init
-    watcher = new(Watcher)
-
-    watcher.FSM = fsm.NewFSM(
-        "paused",
-        fsm.Events{
-            // Рабочее состояние, до момента "Х" более 5 минут
-            {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked"}, Dst: "worked"},
-
-            // Рабочее состояние, до момента "Х" менее 5 минут
-            {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
-
-            // Рабочее состояние, до момента "Х" менее 1 минут
-            {Name: "work_warning_lock", Src: []string{"work_locked"}, Dst: "work_warning_locked"},
-
-            // Момент "Х"
-            {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
-
-            // Пауза, все процессы остановлены
-            {Name: "pause", Src: []string{"worked", "work_locked"}, Dst: "paused"},
-        },
-        fsm.Callbacks{
-            "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
-            "leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
-            "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
-            "enter_worked": func(e *fsm.Event) { watcher.enterWork(e) },
-            "enter_work_locked": func(e *fsm.Event) { watcher.enterWorkLock(e) },
-            "enter_work_warning_locked": func(e *fsm.Event) { watcher.enterWorkWarningLock(e) },
-        },
-    )
-
-    if settings.RunAtStartup {
-        err := watcher.FSM.Event("work")
-        if err != nil {
-            fmt.Println(err)
-        }
-    }
+    windowInit()
+    fsmInit()
 }
 
 func loop() {
@@ -295,4 +269,52 @@ func showNotify() {
     }
 
     go notify.Show(strConverter(settings.Message_title), strConverter(settings.Message_body), strConverter(settings.Message_image))
+}
+
+func fsmInit() {
+
+    watcher = new(Watcher)
+
+    watcher.FSM = fsm.NewFSM(
+    "paused",
+    fsm.Events{
+        // Рабочее состояние, до момента "Х" более 5 минут
+        {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked"}, Dst: "worked"},
+
+        // Рабочее состояние, до момента "Х" менее 5 минут
+        {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
+
+        // Рабочее состояние, до момента "Х" менее 1 минут
+        {Name: "work_warning_lock", Src: []string{"work_locked"}, Dst: "work_warning_locked"},
+
+        // Момент "Х"
+        {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
+
+        // Пауза, все процессы остановлены
+        {Name: "pause", Src: []string{"worked", "work_locked"}, Dst: "paused"},
+    },
+    fsm.Callbacks{
+        "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
+        "leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
+        "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
+        "enter_worked": func(e *fsm.Event) { watcher.enterWork(e) },
+        "enter_work_locked": func(e *fsm.Event) { watcher.enterWorkLock(e) },
+        "enter_work_warning_locked": func(e *fsm.Event) { watcher.enterWorkWarningLock(e) },
+        "enter_locked": func(e *fsm.Event) { watcher.enterLock(e) },
+        "leave_locked": func(e *fsm.Event) { watcher.leaveLock(e) },
+    },
+    )
+
+    if settings.RunAtStartup {
+        err := watcher.FSM.Event("work")
+        if err != nil {
+            fmt.Println(err)
+        }
+    }
+}
+
+func windowInit() {
+
+    window = api.GetMainWindow()
+    window.Url(fmt.Sprintf("http://%s", settings.Webserver_address))
 }

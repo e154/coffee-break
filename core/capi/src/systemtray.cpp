@@ -35,6 +35,7 @@
 #include <QWidget>
 #include <QDialog>
 #include <QMenu>
+#include <QDesktopWidget>
 
 #include "systemtray.h"
 #include "capi.h"
@@ -50,7 +51,7 @@ SystemTray::SystemTray():
 		exitAction(0),
 		runAtStartUpAction(0),
 		dTimerAction(0),
-		helpAction(0),
+//		helpAction(0),
 		alarmInfo(0),
 
 		time4hAction(0),
@@ -116,14 +117,6 @@ void SystemTray::createTrayIcon() {
 
 void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-//    switch (reason) {
-//    case QSystemTrayIcon::Trigger:
-//    case QSystemTrayIcon::DoubleClick:
-//        break;
-//    default:
-//        ;
-//    }
-
     if(mIconActivatedCallback)
 		go_callback_int(mIconActivatedCallback, reason);
 }
@@ -139,7 +132,7 @@ void SystemTray::trayAboutToShow() {
 	mMainMenu->addAction(runAtStartUpAction);
 	mDefaultTimerMenu = mMainMenu->addMenu(tr("&Default timer"));
 	mAlarmMenu = mMainMenu->addMenu(tr("&Alarm sound"));
-	mMainMenu->addAction(helpAction);
+//	mMainMenu->addAction(helpAction);
 
 	mMainMenu->addSeparator();
 	mMainMenu->addAction(alarmInfo);
@@ -181,7 +174,7 @@ void SystemTray::createActions() {
 	runAtStartUpAction = new QAction(tr("&Run at startup"), this);
 	runAtStartUpAction->setCheckable(true);
 
-	helpAction = new QAction(tr("&Help"), this);
+//	helpAction = new QAction(tr("&Help"), this);
 
 	alarmInfo = new QAction(tr("&Alarm is off"), this);
 	alarmInfo->setDisabled(true);
@@ -258,7 +251,7 @@ void SystemTray::createActions() {
 	connect(runAtStartUpAction, SIGNAL(triggered()), this, SLOT(setRunAtStartup1()));
 
 	// show help
-	connect(helpAction, SIGNAL(triggered()), this, SLOT(showHelp()));
+//	connect(helpAction, SIGNAL(triggered()), this, SLOT(showHelp()));
 
 	// set default time
 	connect(dTime4hAction, SIGNAL(triggered()), this, SLOT(set4hdTime()));

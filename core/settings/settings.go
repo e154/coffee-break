@@ -96,7 +96,7 @@ func (s *Settings) Init() *Settings {
     s.Message_image = ""
     s.Default_timer = 2700 * time.Second
     s.Alarm_file = "aperture_logo_bells_01_01.wav"
-    s.Webserver_address = "0.0.0.0:8080"
+    s.Webserver_address = "127.0.0.1:8080"
     s.Maximum_notify = 3
 
 //    create app conf dir

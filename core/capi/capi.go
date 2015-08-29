@@ -2,7 +2,7 @@ package capi
 
 /*
 #cgo CXXFLAGS: -I.
-#cgo LDFLAGS: -L. -Lcore/capi -lQt5Core -lQt5Gui -lQt5Widgets -lstdc++  -lcapi
+#cgo LDFLAGS: -L. -Lcore/capi -lQt5Core -lQt5Gui -lQt5Widgets -lQt5WebKitWidgets -lstdc++  -lcapi
 
 #include "capi.h"
 
@@ -61,3 +61,21 @@ func go_callback_int(pfoo unsafe.Pointer, p1 C.int) {
     foo := *(*func(C.int))(pfoo)
     foo(p1)
 }
+
+/*--------------------------------------------------------
+/* Main window
+--------------------------------------------------------*/
+type MainWindow struct {
+    addr unsafe.Pointer
+}
+
+func GetMainWindow() MainWindow {
+    var instance MainWindow
+    instance.addr = C.GetMainWindow()
+    return instance
+}
+
+func (w *MainWindow) Show() { C.MainWindowShow(w.addr) }
+func (w *MainWindow) Hidde() { C.MainWindowHidde(w.addr) }
+func (w *MainWindow) Url(url string) { C.MainWindowUrl(w.addr, C.CString(url)) }
+
