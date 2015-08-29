@@ -56,6 +56,7 @@ static_source/bower_components
 /core/capi/src/tmp
 /core/capi/src/.cproject
 /core/capi/src/moc_systemtray.cpp
+/core/capi/src/moc_mainwindow.cpp
 static_source/node_modules
 static_source/js
 node_modules
