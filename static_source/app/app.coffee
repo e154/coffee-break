@@ -15,11 +15,13 @@ app = angular
   ])
 
 angular.module('app')
-  .config ['$routeProvider', '$locationProvider', '$routeSegmentProvider',
+  .config ['$routeProvider', '$locationProvider', '$routeSegmentProvider'
   ($routeProvider, $locationProvider, $routeSegmentProvider) ->
     $routeSegmentProvider
-      .when '/', 'base.dashboard'
-      .when '/settings', 'base.settings'
+      .when '/',              'base.dashboard'
+      .when '/settings',      'base.settings'
+      .when '/about',         'base.about'
+      .when '/lock',          'lock'
 
       .segment 'base',
         templateUrl: '/templates/base.html'
@@ -37,6 +39,16 @@ angular.module('app')
 
         .segment 'about',
           templateUrl: '/templates/about.html'
+          controller: 'aboutCtrl as about'
+
+      .up()
+      .segment 'lock',
+        templateUrl: '/templates/lock.html'
+        controller: 'lockCtrl as lock'
+
+    $locationProvider.html5Mode
+      enabled: true
+      requireBase: false
 
     $routeProvider.otherwise
       redirectTo: '/'

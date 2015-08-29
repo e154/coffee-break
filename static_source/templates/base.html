@@ -9,9 +9,15 @@
 
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#/dashboard">Dashboard</a></li>
-                <li><a href="#/settings">Settings</a></li>
-                <li><a href="#/about">About</a></li>
+                <li ng-class="{active: ('base.dashboard' | routeSegmentStartsWith)}">
+                    <a href="{{ 'base.dashboard' | routeSegmentUrl }}">Dashboard</a>
+                </li>
+                <li ng-class="{active: ('base.settings' | routeSegmentStartsWith)}">
+                    <a href="{{ 'base.settings' | routeSegmentUrl }}">Settings</a>
+                </li>
+                <li ng-class="{active: ('base.about' | routeSegmentStartsWith)}">
+                    <a href="{{ 'base.about' | routeSegmentUrl }}">About</a>
+                </li>
             </ul>
         </div>
     </div>

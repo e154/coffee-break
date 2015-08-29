@@ -209,6 +209,7 @@ func webserverInit() {
 // systray callbacks
 func TimeCallback(x C.int) {
     settings.WorkConst = time.Duration(x) * time.Second
+    settings.Work = 0
 }
 
 func DTimeCallback(x C.int) {
@@ -219,14 +220,11 @@ func DTimeCallback(x C.int) {
 
 func IconActivatedCallback(x C.int) {
 
-    fmt.Println(watcher.FSM.Current())
     switch int(x) {
         case DoubleClick:
             if watcher.FSM.Current() != "paused" {
-                fmt.Println("to pause")
                 watcher.FSM.Event("pause")
             } else {
-                fmt.Println("to work")
                 watcher.FSM.Event("work")
             }
 
@@ -308,5 +306,5 @@ func fsmInit() {
 func windowInit() {
 
     window = api.GetMainWindow()
-    window.Url(fmt.Sprintf("http://%s", settings.Webserver_address))
+    window.Url(fmt.Sprintf("http://%s/lock", settings.Webserver_address))
 }
