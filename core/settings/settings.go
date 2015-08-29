@@ -32,7 +32,7 @@ type Settings struct {
     HomeDir string
     Idle time.Duration
     Work time.Duration
-    IdleConst time.Duration
+    LockConst time.Duration
     WorkConst time.Duration         // Таймер рабочег времени
     TotalIdle time.Duration
     TotalWork time.Duration
@@ -88,7 +88,7 @@ func (s *Settings) Init() *Settings {
     s.SoundEnabled = true
     s.RunAtStartup = true
     s.WorkConst = 2700 * time.Second // 45min
-    s.IdleConst = 900 * time.Second // 15min
+    s.LockConst = 900 * time.Second // 15min
     s.Tick = 1 * time.Second
     s.Protect = 30 * time.Second
     s.Message_title = "Внимание"
@@ -136,7 +136,7 @@ func (s *Settings) Save() (*Settings, error) {
     cfg.Set("paused", fmt.Sprintf("%t", s.Paused))
     cfg.Set("run_at_startup", fmt.Sprintf("%t", s.RunAtStartup))
     cfg.Set("sound_enabled", fmt.Sprintf("%t", s.SoundEnabled))
-    cfg.Set("idle", fmt.Sprintf("%v", s.IdleConst.Seconds()))
+    cfg.Set("lock", fmt.Sprintf("%v", s.LockConst.Seconds()))
     cfg.Set("work", fmt.Sprintf("%v", s.WorkConst.Seconds()))
     cfg.Set("protect", fmt.Sprintf("%v", s.Protect.Seconds()))
     cfg.Set("message_title", s.Message_title)
@@ -178,7 +178,7 @@ func (s *Settings) Load() (*Settings, error) {
     s.SoundEnabled, _ = cfg.Bool("sound_enabled")
     s.RunAtStartup, _ = cfg.Bool("run_at_startup")
     s.Paused, _ = cfg.Bool("paused")
-    s.IdleConst = second("idle")
+    s.LockConst = second("lock")
     s.WorkConst = second("work")
     s.Protect = second("protect")
     s.Message_title = cfg.String("message_title")

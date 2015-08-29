@@ -23,7 +23,7 @@ const (
 
 var (
     isWork bool
-    tmp_idle_timer time.Duration
+    tmp_lock_timer time.Duration
     watcher *Watcher
     settings *st.Settings
     systray api.SystemTray
@@ -72,6 +72,8 @@ func (w *Watcher) enterLock(e *fsm.Event) {
 
 func (w *Watcher) leaveLock(e *fsm.Event) {
     window.Hidde()
+    tmp_lock_timer = 0
+    settings.Work = 0
 }
 
 func Run() {
@@ -83,10 +85,10 @@ func Run() {
 
     systrayInit()
     playerInit()
-    loopInit()
     webserverInit()
     windowInit()
     fsmInit()
+    loopInit()
 }
 
 func loop() {
@@ -129,21 +131,11 @@ func loop() {
 
 
         case "locked":
-            tmp_idle_timer += settings.Tick
+            tmp_lock_timer += settings.Tick
             settings.TotalIdle += settings.Tick
 
-            if !isWork {
-                if settings.Idle > settings.IdleConst {
-
-                }
-            } else {
-                if tmp_idle_timer < settings.IdleConst {
-
-                } else {
-                    tmp_idle_timer = 0
-                    settings.Work = 0
-                    watcher.FSM.Event("work")
-                }
+            if tmp_lock_timer > settings.LockConst {
+                watcher.FSM.Event("work")
             }
 
     }
@@ -257,7 +249,7 @@ func strConverter(in string) (out string) {
 
     out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", settings.Idle), -1)
     out = strings.Replace(out, "{work_time}", fmt.Sprintf("%v", settings.Work), -1)
-    out = strings.Replace(out, "{idle}", fmt.Sprintf("%v", settings.IdleConst), -1)
+    out = strings.Replace(out, "{lock}", fmt.Sprintf("%v", settings.LockConst), -1)
     out = strings.Replace(out, "{time_to_lock}", fmt.Sprintf("%v", settings.WorkConst - settings.Work), -1)
     return
 }
