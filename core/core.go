@@ -53,7 +53,6 @@ func (w *Watcher) enterWork(e *fsm.Event) {
 func (w *Watcher) enterWorkLock(e *fsm.Event) {
     systray.SetIcon("static_source/images/icons/watch-red.png")
     showNotify()
-    window.Show()
 }
 
 func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
@@ -66,7 +65,7 @@ func (w *Watcher) enterState(e *fsm.Event) {
 }
 
 func (w *Watcher) enterLock(e *fsm.Event) {
-    window.Show()
+    window.FullScreen()
     systray.SetIcon("static_source/images/icons/watch-red.png")
 }
 
@@ -93,7 +92,7 @@ func Run() {
 
 func loop() {
     isWork = settings.Idle < time.Second
-    protected := settings.Idle < settings.Protect
+//    protected := settings.Idle < settings.Protect
 
     if settings.Paused {
         settings.Work += settings.Tick
@@ -110,10 +109,6 @@ func loop() {
                     watcher.FSM.Event("work_lock")
                 } else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
                     watcher.FSM.Event("work_warning_lock")
-                }
-            } else {
-                if !protected {
-                    watcher.FSM.Event("pause")
                 }
             }
 
@@ -134,7 +129,7 @@ func loop() {
             settings.Lock += settings.Tick
             settings.TotalIdle += settings.Tick
 
-            if settings.Lock > settings.LockConst {
+            if settings.Lock >= settings.LockConst {
                 watcher.FSM.Event("work")
             }
 
@@ -158,11 +153,13 @@ func systrayInit() {
     var DTimeCallbackFunc = DTimeCallback
     var IconActivatedCallbackFunc = IconActivatedCallback
     var RunAtStartupCallbackFunc = RunAtStartupCallback
+    var AlarmCallbackFunc = AlarmCallback
 
     systray.SetTimeCallback(unsafe.Pointer(&TimeCallbackFunc))
     systray.SetDTimeCallback(unsafe.Pointer(&DTimeCallbackFunc))
     systray.SetIconActivatedCallback(unsafe.Pointer(&IconActivatedCallbackFunc))
     systray.SetRunAtStartupCallback(unsafe.Pointer(&RunAtStartupCallbackFunc))
+    systray.SetAlarmCallback(unsafe.Pointer(&AlarmCallbackFunc))
 
     systray.SetVisible(true)
 
@@ -176,6 +173,14 @@ func systrayInit() {
         systray.SetRunAtStartup(1)
     } else {
         systray.SetRunAtStartup(0)
+    }
+
+    if settings.SoundEnabled {
+        systray.SetAlarm(1)
+        systray.SetAlarmInfo("Alarm is on")
+    } else {
+        systray.SetAlarm(3)
+        systray.SetAlarmInfo("Alarm is off")
     }
 }
 
@@ -243,6 +248,19 @@ func RunAtStartupCallback(x C.int) {
     settings.Save()
 }
 
+func AlarmCallback(x C.int) {
+
+    if int(x) == 1 {
+        settings.SoundEnabled = true
+        systray.SetAlarmInfo("Alarm is on")
+    } else {
+        settings.SoundEnabled = false
+        systray.SetAlarmInfo("Alarm is off")
+    }
+
+    settings.Save()
+}
+
 func strConverter(in string) (out string) {
 
     out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", settings.Idle), -1)
@@ -254,8 +272,12 @@ func strConverter(in string) (out string) {
 
 func showNotify() {
 
-    if settings.Work <= ( time.Duration(3) * time.Minute) {
+    if settings.Work <= ( 3 * time.Minute) {
         return
+    }
+
+    if settings.SoundEnabled {
+        player.Play()
     }
 
     go notify.Show(strConverter(settings.Message_title), strConverter(settings.Message_body), strConverter(settings.Message_image))
@@ -269,7 +291,7 @@ func fsmInit() {
     "paused",
     fsm.Events{
         // Рабочее состояние, до момента "Х" более 5 минут
-        {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked"}, Dst: "worked"},
+        {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
 
         // Рабочее состояние, до момента "Х" менее 5 минут
         {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
@@ -281,7 +303,7 @@ func fsmInit() {
         {Name: "lock", Src: []string{"work_warning_locked", "paused"}, Dst: "locked"},
 
         // Пауза, все процессы остановлены
-        {Name: "pause", Src: []string{"worked", "work_locked"}, Dst: "paused"},
+        {Name: "pause", Src: []string{"worked", "work_locked", "locked", "work_warning_locked"}, Dst: "paused"},
     },
     fsm.Callbacks{
         "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
@@ -296,7 +318,7 @@ func fsmInit() {
     )
 
     if settings.RunAtStartup {
-        err := watcher.FSM.Event("lock")
+        err := watcher.FSM.Event("work")
         if err != nil {
             fmt.Println(err)
         }
