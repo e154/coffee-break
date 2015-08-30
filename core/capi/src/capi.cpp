@@ -158,6 +158,7 @@ MainWindow_ *GetMainWindow() {
 
 void MainWindowShow(MainWindow_ *w) {
 	reinterpret_cast<MainWindow *>(w)->show();
+	reinterpret_cast<MainWindow *>(w)->setFocus();
 }
 
 void MainWindowHidde(MainWindow_ *w) {
@@ -168,3 +169,12 @@ void MainWindowUrl(MainWindow_ *w, char *url) {
 	reinterpret_cast<MainWindow *>(w)->url(url);
 }
 
+void MainWindowFullScreen(MainWindow_ *w) {
+	reinterpret_cast<MainWindow *>(w)->showFullScreen();
+	reinterpret_cast<MainWindow *>(w)->setFocus();
+}
+
+void MainWindowNormal(MainWindow_ *w) {
+	reinterpret_cast<MainWindow *>(w)->showNormal();
+	reinterpret_cast<MainWindow *>(w)->setFocus();
+}

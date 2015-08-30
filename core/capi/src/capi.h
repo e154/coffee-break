@@ -84,6 +84,8 @@ MainWindow_ *GetMainWindow();
 void MainWindowShow(MainWindow_ *w);
 void MainWindowHidde(MainWindow_ *w);
 void MainWindowUrl(MainWindow_ *w, char *url);
+void MainWindowFullScreen(MainWindow_ *w);
+void MainWindowNormal(MainWindow_ *w);
 
 #ifdef __cplusplus
 } // extern "C"

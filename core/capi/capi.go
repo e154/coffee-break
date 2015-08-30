@@ -45,7 +45,7 @@ func (t SystemTray) GetTime() int { return int(C.GetTime(t.addr)) }
 func (t SystemTray) SetDTimeCallback(callback unsafe.Pointer) { C.SetDTimeCallback(t.addr, callback) }
 func (t SystemTray) SetDTime(time int) { C.SetDTime((t.addr), C.int(time)) }
 func (t SystemTray) GetDTime() int { return int(C.GetDTime(t.addr)) }
-func (t SystemTray) SetAlarmCallback(callback unsafe.Pointer) { C.SetDTimeCallback(t.addr, callback) }
+func (t SystemTray) SetAlarmCallback(callback unsafe.Pointer) { C.SetAlarmCallback(t.addr, callback) }
 func (t SystemTray) SetAlarm(state int) { C.SetAlarm((t.addr), C.int(state)) }
 func (t SystemTray) GetAlarm() int { return int(C.GetAlarm(t.addr)) }
 func (t SystemTray) SetRunAtStartupCallback(callback unsafe.Pointer) { C.SetRunAtStartupCallback(t.addr, callback) }
@@ -77,5 +77,7 @@ func GetMainWindow() MainWindow {
 
 func (w *MainWindow) Show() { C.MainWindowShow(w.addr) }
 func (w *MainWindow) Hidde() { C.MainWindowHidde(w.addr) }
+func (w *MainWindow) ShowNormal() { C.MainWindowNormal(w.addr) }
+func (w *MainWindow) FullScreen() { C.MainWindowFullScreen(w.addr) }
 func (w *MainWindow) Url(url string) { C.MainWindowUrl(w.addr, C.CString(url)) }
 
