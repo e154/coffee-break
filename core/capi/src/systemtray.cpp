@@ -164,7 +164,7 @@ void SystemTray::trayAboutToShow() {
 
 	// alarm menu
 	mAlarmMenu->addAction(alarmAction1);
-	mAlarmMenu->addAction(alarmAction2);
+//	mAlarmMenu->addAction(alarmAction2);
 	mAlarmMenu->addAction(alarmAction3);
 
 }
@@ -231,15 +231,15 @@ void SystemTray::createActions() {
 
 	// alarm menu
 	alarmAction1 = new QAction(tr("&Alarm clock"), this);
-	alarmAction2 = new QAction(tr("A&nnoying alarm clock"), this);
+//	alarmAction2 = new QAction(tr("A&nnoying alarm clock"), this);
 	alarmAction3 = new QAction(tr("Di&sabled"), this);
 
 	mAlarmStates.insert( std::pair<int, QAction*>(1,alarmAction1) );
-	mAlarmStates.insert( std::pair<int, QAction*>(2,alarmAction2) );
+//	mAlarmStates.insert( std::pair<int, QAction*>(2,alarmAction2) );
 	mAlarmStates.insert( std::pair<int, QAction*>(3,alarmAction3) );
 
 	connect(alarmAction1, SIGNAL(triggered()), this, SLOT(setAlarm1()));
-	connect(alarmAction2, SIGNAL(triggered()), this, SLOT(setAlarm2()));
+//	connect(alarmAction2, SIGNAL(triggered()), this, SLOT(setAlarm2()));
 	connect(alarmAction3, SIGNAL(triggered()), this, SLOT(setAlarm3()));
 
 	exitAction = new QAction(tr("&Exit"), this);

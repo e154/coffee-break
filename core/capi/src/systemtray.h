@@ -119,7 +119,7 @@ public:
 	void setAlarm(int inState, QAction *action);
 	int getAlarm() { return mCurrentAlarm; }
 	void setAlarmCallback(void* callback) {
-		mDtimeCallback = callback;
+		mAlarmCallback = callback;
 	}
 
 	// run at startup
@@ -174,7 +174,7 @@ private slots:
 
 	// alarm
 	inline void setAlarm1() { setAlarm(0, alarmAction1); }
-	inline void setAlarm2() { setAlarm(0, alarmAction2); }
+//	inline void setAlarm2() { setAlarm(0, alarmAction2); }
 	inline void setAlarm3() { setAlarm(0, alarmAction3); }
 
 	inline void setRunAtStartup1() {
