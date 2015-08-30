@@ -42,9 +42,6 @@ void MainWindow::init(QWidget *parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 
     setFocus();
-
-//    showNormal();
-//    showFullScreen();
 }
 
 void MainWindow::url(char *url) {
