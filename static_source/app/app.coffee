@@ -12,6 +12,7 @@ app = angular
     'appServices'
     'route-segment'
     'view-segment'
+    'ngSocket'
   ])
 
 angular.module('app')
