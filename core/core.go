@@ -95,7 +95,6 @@ func loop() {
 //    protected := settings.Idle < settings.Protect
 
     if settings.Paused {
-        settings.Work += settings.Tick
         return
     }
 
