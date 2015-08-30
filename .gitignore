@@ -46,6 +46,7 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
+/build
 
 static_source/bower_components
 /core/systray/libsystray.so
