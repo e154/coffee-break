@@ -1,1 +1,20 @@
 <canvas matrix="exp" id="contenedor"></canvas>
+
+<div class="state">
+    <dl>
+        <dt>Uptime:</dt>
+        <dd>{{lock.uptime_total}}</dd>
+        <dt>Uptime idle:</dt>
+        <dd>{{lock.uptime_idle}}</dd>
+        <dt>Lock:</dt>
+        <dd>{{lock.lock}}</dd>
+        <dt>Lock time:</dt>
+        <dd>{{lock.lock_const}}</dd>
+        <dt>Total work:</dt>
+        <dd>{{lock.total_work}}</dd>
+        <dt>Total idle:</dt>
+        <dd>{{lock.total_idle}}</dd>
+        <dt>Unlock wait:</dt>
+        <dd>{{lock.unlock_wait}}</dd>
+    </dl>
+</div>
