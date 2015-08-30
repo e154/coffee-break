@@ -14,3 +14,12 @@ gulp.task('default', function(cb) {
         'watch'
     );
 });
+
+gulp.task('pack', function(cb) {
+    runSequence(
+        'build_lib_js',
+        'build_coffee_js',
+        'build_lib_css',
+        'build_less'
+    );
+});
