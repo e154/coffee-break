@@ -22,8 +22,11 @@ angular
         val / 1000000000
 
     toHumanTime = (sec_num)->
+
+      time = ''
       if sec_num < 0
-        return
+        sec_num *= -1
+        time += '-'
 
       hours   = Math.floor(sec_num / 3600)
       minutes = Math.floor((sec_num - (hours * 3600)) / 60)
@@ -37,8 +40,6 @@ angular
 
       if seconds < 10
         seconds = '0' + seconds
-
-      time = ''
 
       if hours != '00'
         time += hours+ 'h'
@@ -57,18 +58,19 @@ angular
       if data.uptime_idle?
         vm.uptime_idle = data.uptime_idle
 
-      if data.timeinfo.lock?
-        vm.lock = toHumanTime(toSeconds(data.timeinfo.lock))
+      if data.timeinfo?
+        if data.timeinfo['lock']?
+          vm.lock = toHumanTime(toSeconds(data.timeinfo['lock']))
 
-      if data.timeinfo.lock_const?
-        vm.lock_const = toHumanTime(toSeconds(data.timeinfo.lock_const))
+        if data.timeinfo.lock_const?
+          vm.lock_const = toHumanTime(toSeconds(data.timeinfo.lock_const))
 
-      if data.timeinfo.total_work?
-        vm.total_work = toHumanTime(toSeconds(data.timeinfo.total_work))
+        if data.timeinfo.total_work?
+          vm.total_work = toHumanTime(toSeconds(data.timeinfo.total_work))
 
-      if data.timeinfo.total_idle?
-        vm.total_idle = toHumanTime(toSeconds(data.timeinfo.total_idle))
+        if data.timeinfo.total_idle?
+          vm.total_idle = toHumanTime(toSeconds(data.timeinfo.total_idle))
 
-      if data.timeinfo.lock_const && data.timeinfo.lock?
-        vm.unlock_wait = toHumanTime(toSeconds(data.timeinfo.lock_const - data.timeinfo.lock))
+        if data.timeinfo.lock_const && data.timeinfo.lock?
+          vm.unlock_wait = toHumanTime(toSeconds(data.timeinfo.lock_const - data.timeinfo.lock))
   ]
