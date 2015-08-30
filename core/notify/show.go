@@ -6,7 +6,7 @@ import (
     "time"
 )
 
-const DELAY = 3000;
+const DELAY = 10000;
 
 func Show(title, body, image string) {
 
