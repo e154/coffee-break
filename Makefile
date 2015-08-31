@@ -20,8 +20,8 @@ debian:
 	cp -r static_source/css $(DIR)/$(PKG_ROOT)/static_source/css
 	cp -r static_source/audio $(DIR)/$(PKG_ROOT)/static_source/audio
 	cp -r static_source/images $(DIR)/$(PKG_ROOT)/static_source/images
-	./shared_library.sh watcher $(DIR)/$(PKG_ROOT)/lib
-	cp watcher.sh $(DIR)/$(PKG_ROOT)/watcher.sh
+	pkg/shared_library.sh watcher $(DIR)/$(PKG_ROOT)/lib
+	cp pkg/watcher.sh $(DIR)/$(PKG_ROOT)/watcher.sh
 
 	rm -rf $(DIR)/DEBIAN
 	cp -r pkg/DEBIAN $(DIR)/DEBIAN
