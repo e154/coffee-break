@@ -67,3 +67,4 @@ daemon.pid
 
 *.o
 *.a
+*.deb

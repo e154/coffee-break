@@ -25,13 +25,13 @@ debian:
 
 	rm -rf $(DIR)/DEBIAN
 	cp -r pkg/DEBIAN $(DIR)/DEBIAN
-    cd $(DIR) && md5deep -r . > DEBIAN/md5sums
-    fakeroot dpkg-deb --build build
-    mv build.deb $(PKG_NAME)_$(VERSION).deb
+	cd $(DIR) && md5deep -r . > DEBIAN/md5sums
+	fakeroot dpkg-deb --build build
+	mv build.deb $(PKG_NAME)_$(VERSION).deb
 
 clean:
 	rm -f watcher
-	rm -rf build
+	rm -rf $(DIR)
 	rm -rf node_modules
 	rm -rf static_source/bower_components
 	rm -rf static_source/css
