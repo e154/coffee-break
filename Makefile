@@ -1,23 +1,33 @@
 DIR=build
+PKG_ROOT=opt/watcher
+PKG_NAME=watcher
+VERSION=1.0.0
 
-all: watcher
+all: debian
 
-watcher:
+debian:
 	cd core/capi/src && $(MAKE) all
 	go build
 	npm install
 	cd static_source && bower install
 	gulp pack
-	mkdir -p $(DIR)
-	mkdir -p $(DIR)/lib
-	mkdir -p $(DIR)/static_source
-	cp watcher $(DIR)/watcher
-	cp -r static_source/templates $(DIR)/static_source/templates
-	cp -r static_source/js build/static_source/js
-	cp -r static_source/css build/static_source/css
-	cp -r static_source/audio build/static_source/audio
-	cp -r static_source/images build/static_source/images
-	./shared_library.sh watcher $(DIR)/lib
+	mkdir -p $(DIR)/$(PKG_ROOT)
+	mkdir -p $(DIR)/$(PKG_ROOT)/lib
+	mkdir -p $(DIR)/$(PKG_ROOT)/static_source
+	cp watcher $(DIR)/$(PKG_ROOT)/watcher
+	cp -r static_source/templates $(DIR)/$(PKG_ROOT)/static_source/templates
+	cp -r static_source/js $(DIR)/$(PKG_ROOT)/static_source/js
+	cp -r static_source/css $(DIR)/$(PKG_ROOT)/static_source/css
+	cp -r static_source/audio $(DIR)/$(PKG_ROOT)/static_source/audio
+	cp -r static_source/images $(DIR)/$(PKG_ROOT)/static_source/images
+	./shared_library.sh watcher $(DIR)/$(PKG_ROOT)/lib
+	cp watcher.sh $(DIR)/$(PKG_ROOT)/watcher.sh
+
+	rm -rf $(DIR)/DEBIAN
+	cp -r pkg/DEBIAN $(DIR)/DEBIAN
+    cd $(DIR) && md5deep -r . > DEBIAN/md5sums
+    fakeroot dpkg-deb --build build
+    mv build.deb $(PKG_NAME)_$(VERSION).deb
 
 clean:
 	rm -f watcher

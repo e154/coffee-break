@@ -1,0 +1,15 @@
+Package: Watcher
+Version: 1.0.0
+Architecture: i386
+Maintainer: Filippov Alex <filippov.a@e154.ru>
+Installed-Size:
+Depends:
+Suggests:
+Breaks:
+Replaces:
+Provides:
+Section:
+Priority: optional
+Homepage: https://www.e154.ru/blog/
+Description: Watch description.
+

@@ -1,27 +1,24 @@
 init
 ====
 
+## dependencies
+
+go get golang.org/x/mobile/exp/audio
+go get github.com/mattn/go-gtk/glib
+go get github.com/astaxie/beego/config
+go get github.com/gorilla/websocket
+go get github.com/gorilla/websocket
+go get github.com/c9s/goprocinfo/linux
+go get github.com/looplab/fsm
+
 ## development
-apt-get install libnotify-dev libgdk-pixbuf libopenal-dev libgtk-3-dev libappindicator3-dev
 
-pkgconf --cflags glib-2.0
--I/usr/include/glib-2.0 -I/usr/lib/i386-linux-gnu/glib-2.0/include
-
-#### web static source build
-
+compile
 ```bash
-
-npm install
-
-cd static_source
-bower install
-cd ../
-
-gulp
-
+	make
 ```
 
-## Dependencies
-
-#### libraries
-libopenal1 libopenal-data libgtk-3 libgdk-3 libnotify? libcairo-gobject
+clear
+```bash
+	make clean
+```
