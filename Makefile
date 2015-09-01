@@ -12,7 +12,7 @@ debian:
 	cd static_source && bower install
 	gulp pack
 	mkdir -p $(DIR)/$(PKG_ROOT)
-	mkdir -p $(DIR)/$(PKG_ROOT)/lib
+	mkdir -p $(DIR)/usr
 	mkdir -p $(DIR)/$(PKG_ROOT)/static_source
 	cp watcher $(DIR)/$(PKG_ROOT)/watcher
 	cp -r static_source/templates $(DIR)/$(PKG_ROOT)/static_source/templates
@@ -20,9 +20,9 @@ debian:
 	cp -r static_source/css $(DIR)/$(PKG_ROOT)/static_source/css
 	cp -r static_source/audio $(DIR)/$(PKG_ROOT)/static_source/audio
 	cp -r static_source/images $(DIR)/$(PKG_ROOT)/static_source/images
-	pkg/shared_library.sh watcher $(DIR)/$(PKG_ROOT)/lib
+	cp pkg/share $(DIR)/usr/share -r
 	cp pkg/watcher.sh $(DIR)/$(PKG_ROOT)/watcher.sh
-
+	chmod +x $(DIR)/$(PKG_ROOT)/watcher.sh
 	rm -rf $(DIR)/DEBIAN
 	cp -r pkg/DEBIAN $(DIR)/DEBIAN
 	cd $(DIR) && md5deep -r . > DEBIAN/md5sums
@@ -38,4 +38,5 @@ clean:
 	rm -rf static_source/js
 	rm -rf static_source/node_modules
 	cd core/capi/src && $(MAKE) clean
+	rm -f $(PKG_NAME)_$(VERSION).deb
 

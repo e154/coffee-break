@@ -15,5 +15,8 @@ exit $exit_status
 }
 
 ln -sr /opt/watcher/watcher.sh /usr/bin/watcher
+chmod 644 /opt/watcher/static_source/images/icons/ -R
+chmod 755 /opt/watcher/static_source/images/icons
+
 
 exit 0
