@@ -93,8 +93,8 @@ func (s *Settings) Init() *Settings {
     s.Tick = 1 * time.Second
     s.Protect = 30 * time.Second
     s.Message_title = "Внимание"
-    s.Message_body = "Вы работаете уже {work_time}, через {time_to_lock} экран будет заблокирован, позаботьтесь о сохранности данных!"
-    s.Message_image = ""
+    s.Message_body = "Вы работаете уже {work_time}, через {time_to_lock} экран будет заблокирован, позаботьтесь о сохранности данных!\n\r"
+    s.Message_image = "static_source/images/icons/watch-grey.png"
     s.Default_timer = 2700 * time.Second
     s.Alarm_file = "aperture_logo_bells_01_01.wav"
     s.Webserver_address = "127.0.0.1:8080"

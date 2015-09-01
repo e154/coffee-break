@@ -114,11 +114,15 @@ func loop() {
         case "work_locked":
             if settings.Work < (settings.WorkConst - 5 * time.Minute) {
                 watcher.FSM.Event("work")
+            } else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
+                watcher.FSM.Event("work_warning_lock")
             }
 
         case "work_warning_locked":
-            if settings.Work < (settings.WorkConst - 1 * time.Minute) {
-                watcher.FSM.Event("work")
+            if settings.Work <= (settings.WorkConst - 1 * time.Minute) {
+                watcher.FSM.Event("work_locked")
+            } else if settings.Work >= (settings.WorkConst) {
+                watcher.FSM.Event("lock")
             }
 
         case "paused":
@@ -272,6 +276,7 @@ func strConverter(in string) (out string) {
 func showNotify() {
 
     if settings.Work <= ( 3 * time.Minute) {
+        systray.ShowMessage(strConverter(settings.Message_title), strConverter(settings.Message_body), 1)
         return
     }
 
@@ -279,7 +284,7 @@ func showNotify() {
         player.Play()
     }
 
-    go notify.Show(strConverter(settings.Message_title), strConverter(settings.Message_body), strConverter(settings.Message_image))
+    go notify.Show(strConverter(settings.Message_title), strConverter(settings.Message_body), settings.Message_image)
 }
 
 func fsmInit() {
@@ -293,13 +298,13 @@ func fsmInit() {
         {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
 
         // Рабочее состояние, до момента "Х" менее 5 минут
-        {Name: "work_lock", Src: []string{"worked"}, Dst: "work_locked"},
+        {Name: "work_lock", Src: []string{"worked", "locked"}, Dst: "work_locked"},
 
         // Рабочее состояние, до момента "Х" менее 1 минут
-        {Name: "work_warning_lock", Src: []string{"work_locked"}, Dst: "work_warning_locked"},
+        {Name: "work_warning_lock", Src: []string{"work_locked", "locked"}, Dst: "work_warning_locked"},
 
         // Момент "Х"
-        {Name: "lock", Src: []string{"work_warning_locked", "paused"}, Dst: "locked"},
+        {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
 
         // Пауза, все процессы остановлены
         {Name: "pause", Src: []string{"worked", "work_locked", "locked", "work_warning_locked"}, Dst: "paused"},
