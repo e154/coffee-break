@@ -95,7 +95,7 @@ func Run() {
 
 func loop() {
     isWork = settings.Idle < time.Second
-    protected := settings.Idle < settings.Protect
+//    protected := settings.Idle < settings.Protect
 
     if settings.Paused {
         return
@@ -110,24 +110,30 @@ func loop() {
         case "worked":
             if isWork {
                 if settings.Work >= (settings.WorkConst - 5 * time.Minute) {
-                    watcher.FSM.Event("work_lock")
+                    err := watcher.FSM.Event("work_lock")
+                    errHandler(err)
                 } else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
-                    watcher.FSM.Event("work_warning_lock")
+                    err := watcher.FSM.Event("work_warning_lock")
+                    errHandler(err)
                 }
             }
 
         case "work_locked":
             if settings.Work < (settings.WorkConst - 5 * time.Minute) {
-                watcher.FSM.Event("work")
+                err := watcher.FSM.Event("work")
+                errHandler(err)
             } else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
-                watcher.FSM.Event("work_warning_lock")
+                err := watcher.FSM.Event("work_warning_lock")
+                errHandler(err)
             }
 
         case "work_warning_locked":
             if settings.Work <= (settings.WorkConst - 1 * time.Minute) {
-                watcher.FSM.Event("work_locked")
+                err := watcher.FSM.Event("work_locked")
+                errHandler(err)
             } else if settings.Work >= (settings.WorkConst) {
-                watcher.FSM.Event("lock")
+                err := watcher.FSM.Event("lock")
+                errHandler(err)
             }
 
         case "paused":
@@ -138,22 +144,23 @@ func loop() {
             settings.TotalIdle += settings.Tick
 
             if settings.Lock >= settings.LockConst {
-                watcher.FSM.Event("work")
+                err := watcher.FSM.Event("work")
+                errHandler(err)
             }
 
     }
 
-    fmt.Printf("\n")
-    fmt.Printf("settings.Idle: %v\n", settings.Idle)
-    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
-    fmt.Printf("protected: %t\n", protected)
-    fmt.Printf("settings.Protect: %v\n", settings.Protect)
-    fmt.Printf("Stage: %s\n", watcher.FSM.Current())
-    fmt.Printf("isWork: %t\n", isWork)
-    fmt.Printf("Work: %v\n", settings.Work)
-    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
-    fmt.Printf("LockConst: %v\n", settings.LockConst)
-    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
+//    fmt.Printf("\n")
+//    fmt.Printf("settings.Idle: %v\n", settings.Idle)
+//    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
+//    fmt.Printf("protected: %t\n", protected)
+//    fmt.Printf("settings.Protect: %v\n", settings.Protect)
+//    fmt.Printf("Stage: %s\n", watcher.FSM.Current())
+//    fmt.Printf("isWork: %t\n", isWork)
+//    fmt.Printf("Work: %v\n", settings.Work)
+//    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
+//    fmt.Printf("LockConst: %v\n", settings.LockConst)
+//    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
 }
 
 func systrayInit() {
@@ -248,9 +255,11 @@ func IconActivatedCallback(x C.int) {
     switch int(x) {
         case DoubleClick:
             if watcher.FSM.Current() != "paused" {
-                watcher.FSM.Event("pause")
+                err := watcher.FSM.Event("pause")
+                errHandler(err)
             } else {
-                watcher.FSM.Event("work")
+                err := watcher.FSM.Event("work")
+                errHandler(err)
             }
 
         case SingleClick:
@@ -293,7 +302,7 @@ func strConverter(in string) (out string) {
 func showNotify() {
 
     if settings.Work <= ( 3 * time.Minute) {
-        systray.ShowMessage(strConverter(settings.Message_title), strConverter(settings.Message_body), 1)
+//        systray.ShowMessage(strConverter(settings.Message_title), strConverter(settings.Message_body), 1)
         return
     }
 
@@ -340,9 +349,7 @@ func fsmInit() {
 
     if settings.RunAtStartup {
         err := watcher.FSM.Event("work")
-        if err != nil {
-            fmt.Println(err)
-        }
+        errHandler(err)
     }
 }
 
@@ -350,4 +357,9 @@ func windowInit() {
 
     window = api.GetMainWindow()
     window.Url(fmt.Sprintf("http://%s/lock", settings.Webserver_address))
+}
+
+func errHandler(err error) {
+    if err == nil { return }
+    fmt.Printf("error: %s\n", err.Error())
 }

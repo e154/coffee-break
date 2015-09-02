@@ -177,11 +177,6 @@ func (s *Settings) Load() (*Settings, error) {
 
 
     if cfg.String("app_version") != APP_VERSION {
-        fmt.Println("---------------------------------")
-        fmt.Println(cfg.String("app_version"))
-        fmt.Println(cfg.String("app_version") != APP_VERSION)
-        fmt.Println("---------------------------------")
-
         s.Save()
         return s.Load()
     }
