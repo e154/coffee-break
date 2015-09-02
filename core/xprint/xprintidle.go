@@ -2,7 +2,7 @@ package xprint
 
 /*
 #cgo CFLAGS: -I.
-#cgo LDFLAGS: -L. -Lcore/xprint/ -lxprintidle -lX11 -lXss -lXdmcp -lXext
+#cgo LDFLAGS: -L. -Lcore/xprint/ -lX11 -lXss -lXdmcp -lXext
 #include "xprintidle.h"
 */
 import "C"

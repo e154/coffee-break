@@ -3,7 +3,7 @@ Version: 1.0.0
 Architecture: i386
 Maintainer: Filippov Alex <filippov.a@e154.ru>
 Installed-Size:
-Depends: qt5-default, libqt5webkit5, libopenal1
+Depends: qt5-default (>= 5.3.2), libqt5webkit5 (>= 5.3.2), libopenal1 (>= 1:1.15), libnotify4 (>= 0.7.6)
 Suggests:
 Breaks:
 Replaces: nautilus-watcher
