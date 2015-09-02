@@ -95,14 +95,16 @@ func Run() {
 
 func loop() {
     isWork = settings.Idle < time.Second
-//    protected := settings.Idle < settings.Protect
+    protected := settings.Idle < settings.Protect
 
     if settings.Paused {
         return
     }
 
-    settings.Work += settings.Tick
-    settings.TotalWork += settings.Tick
+    if watcher.FSM.Current() != "locked" {
+        settings.Work += settings.Tick
+        settings.TotalWork += settings.Tick
+    }
 
     switch watcher.FSM.Current() {
         case "worked":
@@ -140,6 +142,18 @@ func loop() {
             }
 
     }
+
+    fmt.Printf("\n")
+    fmt.Printf("settings.Idle: %v\n", settings.Idle)
+    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
+    fmt.Printf("protected: %t\n", protected)
+    fmt.Printf("settings.Protect: %v\n", settings.Protect)
+    fmt.Printf("Stage: %s\n", watcher.FSM.Current())
+    fmt.Printf("isWork: %t\n", isWork)
+    fmt.Printf("Work: %v\n", settings.Work)
+    fmt.Printf("TotalIdle: %v\n", settings.TotalIdle)
+    fmt.Printf("LockConst: %v\n", settings.LockConst)
+    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
 }
 
 func systrayInit() {
@@ -194,7 +208,7 @@ func playerInit() {
 
     player = audio.PlayerPtr()
     if settings.Alarm_file != "" {
-        player.File("static_source/audio/" + settings.Alarm_file)
+        player.File(settings.Alarm_file)
     }
 }
 

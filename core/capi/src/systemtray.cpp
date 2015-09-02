@@ -118,6 +118,7 @@ void SystemTray::createTrayIcon() {
 void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(mIconActivatedCallback)
+    	std::cout << "mIconActivatedCallback: " << mIconActivatedCallback << std::endl;
 		go_callback_int(mIconActivatedCallback, reason);
 }
 

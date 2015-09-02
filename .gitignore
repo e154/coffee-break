@@ -49,22 +49,18 @@ crashlytics-build.properties
 /build
 
 static_source/bower_components
-/core/systray/libsystray.so
 /tmp
-/core/capi/libcapi.so
 /core/capi/src/.project
 /core/capi/src/Debug
 /core/capi/src/tmp
 /core/capi/src/.cproject
-/core/capi/src/moc_systemtray.cpp
-/core/capi/src/moc_mainwindow.cpp
 static_source/node_modules
 static_source/js
 node_modules
 static_source/css
 watcher
-daemon.pid
 
 *.o
 *.a
 *.deb
+moc_*.cpp

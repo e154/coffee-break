@@ -15,6 +15,7 @@ import (
 const (
     CONF_NAME string = "app.conf"
     APP_NAME string = "watcher"
+    APP_VERSION = "1.0.0"
     permMode os.FileMode = 0666
 )
 
@@ -52,12 +53,11 @@ type Settings struct {
     Message_image string
     Default_timer time.Duration         // Дефолтный таймер рабочего времени
     Alarm_file string
-    Maximum_notify int
-    Notify_count int
     Webserver_address string
     SysTray capi.SystemTray
     Run_at_startup bool
     Lock time.Duration
+    AppVersion string
 }
 
 func (s *Settings) GetHomeDir() (string, error) {
@@ -96,9 +96,9 @@ func (s *Settings) Init() *Settings {
     s.Message_body = "Вы работаете уже {work_time}, через {time_to_lock} экран будет заблокирован, позаботьтесь о сохранности данных!\n\r"
     s.Message_image = "static_source/images/icons/watch-grey.png"
     s.Default_timer = 2700 * time.Second
-    s.Alarm_file = "aperture_logo_bells_01_01.wav"
-    s.Webserver_address = "127.0.0.1:8080"
-    s.Maximum_notify = 3
+    s.Alarm_file = "static_source/audio/aperture_logo_bells_01_01.wav"
+    s.Webserver_address = "127.0.0.1:8078"
+    s.AppVersion = APP_VERSION
 
 //    create app conf dir
     fileList, _ := ioutil.ReadDir(s.HomeDir)
@@ -146,7 +146,7 @@ func (s *Settings) Save() (*Settings, error) {
     cfg.Set("default_timer", fmt.Sprintf("%v", s.Default_timer.Seconds()))
     cfg.Set("alarm_file", s.Alarm_file)
     cfg.Set("webserver_address", s.Webserver_address)
-    cfg.Set("maximum_notify", fmt.Sprintf("%d", s.Maximum_notify))
+    cfg.Set("app_version", s.AppVersion)
 
     if err := cfg.SaveConfigFile(s.dir + CONF_NAME); err != nil {
         fmt.Printf("err with create conf file: %s\n", s.dir + CONF_NAME)
@@ -175,6 +175,17 @@ func (s *Settings) Load() (*Settings, error) {
         return time.Duration(val) * time.Second
     }
 
+
+    if cfg.String("app_version") != APP_VERSION {
+        fmt.Println("---------------------------------")
+        fmt.Println(cfg.String("app_version"))
+        fmt.Println(cfg.String("app_version") != APP_VERSION)
+        fmt.Println("---------------------------------")
+
+        s.Save()
+        return s.Load()
+    }
+
     s.Ready = true
     s.SoundEnabled, _ = cfg.Bool("sound_enabled")
     s.RunAtStartup, _ = cfg.Bool("run_at_startup")
@@ -188,7 +199,7 @@ func (s *Settings) Load() (*Settings, error) {
     s.Default_timer = second("default_timer")
     s.Alarm_file = cfg.String("alarm_file")
     s.Webserver_address = cfg.String("webserver_address")
-    s.Maximum_notify, _ = cfg.Int("maximum_notify")
+    s.AppVersion = cfg.String("app_version")
 
     return s, nil
 }
