@@ -19,6 +19,9 @@ import (
 const (
     DoubleClick = 2
     SingleClick = 3
+    LOCK_ICON = "static_source/images/icons/watch-red.png"
+    WORK_ICON = "static_source/images/icons/watch-blue.png"
+    PAUSE_ICON = "static_source/images/icons/watch-grey.png"
 )
 
 var (
@@ -35,28 +38,28 @@ type Watcher struct {
 }
 
 func (w *Watcher) enterPause(e *fsm.Event) {
-    systray.SetIcon("static_source/images/icons/watch-grey.png")
+    systray.SetIcon(PAUSE_ICON)
     settings.Paused = true
 }
 
 func (w *Watcher) leavePause(e *fsm.Event) {
-    systray.SetIcon("static_source/images/icons/watch-blue.png")
+    systray.SetIcon(WORK_ICON)
     settings.Paused = false
     settings.Work = 0
 }
 
 func (w *Watcher) enterWork(e *fsm.Event) {
     settings.Work = 0
-    systray.SetIcon("static_source/images/icons/watch-blue.png")
+    systray.SetIcon(WORK_ICON)
 }
 
 func (w *Watcher) enterWorkLock(e *fsm.Event) {
-    systray.SetIcon("static_source/images/icons/watch-red.png")
+    systray.SetIcon(LOCK_ICON)
     showNotify()
 }
 
 func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
-    systray.SetIcon("static_source/images/icons/watch-red.png")
+    systray.SetIcon(LOCK_ICON)
     showNotify()
 }
 
@@ -66,7 +69,7 @@ func (w *Watcher) enterState(e *fsm.Event) {
 
 func (w *Watcher) enterLock(e *fsm.Event) {
     window.FullScreen()
-    systray.SetIcon("static_source/images/icons/watch-red.png")
+    systray.SetIcon(LOCK_ICON)
 }
 
 func (w *Watcher) leaveLock(e *fsm.Event) {
@@ -149,7 +152,7 @@ func systrayInit() {
     thread := api.ApplicationThread()
     systray = api.GetSystemTray()
     systray.MoveToThread(thread)
-    systray.SetIcon("static_source/images/icons/watch-grey.png")
+    systray.SetIcon(PAUSE_ICON)
     systray.SetToolTip("Watcher")
 
     var TimeCallbackFunc = TimeCallback
