@@ -177,7 +177,7 @@ func systrayInit(thread unsafe.Pointer) {
     systray = api.GetSystemTray()
     systray.MoveToThread(thread)
     systray.SetIcon(PAUSE_ICON)
-    systray.SetToolTip("Watcher")
+    systray.SetToolTip("Coffee Break")
 
     systray.SetTimeCallback(unsafe.Pointer(&TimeCallbackFunc))
     systray.SetDTimeCallback(unsafe.Pointer(&DTimeCallbackFunc))

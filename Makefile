@@ -1,6 +1,6 @@
 DIR=build
-PKG_ROOT=opt/watcher
-PKG_NAME=watcher
+PKG_ROOT=opt/coffeebreak
+PKG_NAME=coffeebreak
 VERSION=1.0.0
 
 all: debian
@@ -14,15 +14,15 @@ debian:
 	mkdir -p $(DIR)/$(PKG_ROOT)
 	mkdir -p $(DIR)/usr
 	mkdir -p $(DIR)/$(PKG_ROOT)/static_source
-	cp watcher $(DIR)/$(PKG_ROOT)/watcher
+	cp coffee-break $(DIR)/$(PKG_ROOT)/coffee-break
 	cp -r static_source/templates $(DIR)/$(PKG_ROOT)/static_source/templates
 	cp -r static_source/js $(DIR)/$(PKG_ROOT)/static_source/js
 	cp -r static_source/css $(DIR)/$(PKG_ROOT)/static_source/css
 	cp -r static_source/audio $(DIR)/$(PKG_ROOT)/static_source/audio
 	cp -r static_source/images $(DIR)/$(PKG_ROOT)/static_source/images
 	cp pkg/share $(DIR)/usr/share -r
-	cp pkg/watcher.sh $(DIR)/$(PKG_ROOT)/watcher.sh
-	chmod +x $(DIR)/$(PKG_ROOT)/watcher.sh
+	cp pkg/coffee-break.sh $(DIR)/$(PKG_ROOT)/coffee-break.sh
+	chmod +x $(DIR)/$(PKG_ROOT)/coffee-break.sh
 	rm -rf $(DIR)/DEBIAN
 	cp -r pkg/DEBIAN $(DIR)/DEBIAN
 	cd $(DIR) && md5deep -r . > DEBIAN/md5sums
@@ -30,7 +30,7 @@ debian:
 	mv build.deb $(PKG_NAME)_$(VERSION).deb
 
 clean:
-	rm -f watcher
+	rm -f coffeebreak
 	rm -rf $(DIR)
 	rm -rf node_modules
 	rm -rf static_source/bower_components

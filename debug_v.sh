@@ -29,4 +29,4 @@ valgrind\
     --leak-check=full\
     --show-reachable=yes\
     --leak-resolution=med\
-    ./watcher
+    ./coffeebreak

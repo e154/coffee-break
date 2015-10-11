@@ -58,7 +58,7 @@ static_source/node_modules
 static_source/js
 node_modules
 static_source/css
-watcher
+coffee-break
 
 *.o
 *.a

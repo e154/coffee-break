@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Watcher
-GenericName=Watcher
+Name=Coffee Break
+GenericName=Coffee Break
 Comment=
-Exec=watcher
+Exec=coffee-break
 Terminal=false
 Type=Application
 Icon=watcher

@@ -14,7 +14,7 @@ import (
 
 const (
     CONF_NAME string = "app.conf"
-    APP_NAME string = "watcher"
+    APP_NAME string = "coffeebreak"
     APP_VERSION = "1.0.0"
     permMode os.FileMode = 0666
 )

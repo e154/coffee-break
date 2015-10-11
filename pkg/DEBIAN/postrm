@@ -14,6 +14,6 @@ logger -s -p "syslog.err" -t "ootync.deb" "supersh.deb script '$0' error code $e
 exit $exit_status
 }
 
-rm -rf /usr/bin/watcher
+rm -rf /usr/bin/coffee-break
 
 exit 0
