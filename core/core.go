@@ -31,6 +31,11 @@ var (
     systray api.SystemTray
     player *audio.Player
     window api.MainWindow
+    TimeCallbackFunc = TimeCallback
+	DTimeCallbackFunc = DTimeCallback
+	IconActivatedCallbackFunc = IconActivatedCallback
+	RunAtStartupCallbackFunc = RunAtStartupCallback
+	AlarmCallbackFunc = AlarmCallback
 )
 
 type Watcher struct {
@@ -78,17 +83,17 @@ func (w *Watcher) leaveLock(e *fsm.Event) {
     settings.Work = 0
 }
 
-func Run() {
+func Run(thread unsafe.Pointer) {
 
     // init settings
     settings = st.SettingsPtr()
     settings.Init()
     settings.Load()
 
-    systrayInit()
+    systrayInit(thread)
     playerInit()
     webserverInit()
-    windowInit()
+    windowInit(thread)
     fsmInit()
     loopInit()
 }
@@ -153,7 +158,6 @@ func loop() {
 //    fmt.Printf("\n")
 //    fmt.Printf("settings.Idle: %v\n", settings.Idle)
 //    fmt.Printf("PROTECT_INTERVAR: %v\n", settings.Protect)
-//    fmt.Printf("protected: %t\n", protected)
 //    fmt.Printf("settings.Protect: %v\n", settings.Protect)
 //    fmt.Printf("Stage: %s\n", watcher.FSM.Current())
 //    fmt.Printf("isWork: %t\n", isWork)
@@ -163,24 +167,17 @@ func loop() {
 //    fmt.Printf("WorkConst: %v\n", settings.WorkConst)
 }
 
-func systrayInit() {
+func systrayInit(thread unsafe.Pointer) {
 
     seconds := func(d time.Duration) int {
         ns := d.Nanoseconds()
         return int(ns / 1000000000)
     }
 
-    thread := api.ApplicationThread()
     systray = api.GetSystemTray()
     systray.MoveToThread(thread)
     systray.SetIcon(PAUSE_ICON)
     systray.SetToolTip("Watcher")
-
-    var TimeCallbackFunc = TimeCallback
-    var DTimeCallbackFunc = DTimeCallback
-    var IconActivatedCallbackFunc = IconActivatedCallback
-    var RunAtStartupCallbackFunc = RunAtStartupCallback
-    var AlarmCallbackFunc = AlarmCallback
 
     systray.SetTimeCallback(unsafe.Pointer(&TimeCallbackFunc))
     systray.SetDTimeCallback(unsafe.Pointer(&DTimeCallbackFunc))
@@ -353,9 +350,10 @@ func fsmInit() {
     }
 }
 
-func windowInit() {
+func windowInit(thread unsafe.Pointer) {
 
     window = api.GetMainWindow()
+	window.Thread(thread)
     window.Url(fmt.Sprintf("http://%s/lock", settings.Webserver_address))
 }
 

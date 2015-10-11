@@ -3,7 +3,7 @@ package notify
 //#cgo pkg-config: libnotify
 
 /*
-#cgo CFLAGS: -I. -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib/i386-linux-gnu/glib-2.0/include
+#cgo CFLAGS: -I. -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 #cgo LDFLAGS: -L. -Lcore/notify/ -lgobject-2.0 -lglib-2.0 -lgio-2.0 -lgdk_pixbuf-2.0 -lnotify
 #include <stdlib.h>
 #include <libnotify/notify.h>

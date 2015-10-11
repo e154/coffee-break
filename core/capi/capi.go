@@ -81,4 +81,4 @@ func (w *MainWindow) Hidde() { C.MainWindowHidde(w.addr) }
 func (w *MainWindow) ShowNormal() { C.MainWindowNormal(w.addr) }
 func (w *MainWindow) FullScreen() { C.MainWindowFullScreen(w.addr) }
 func (w *MainWindow) Url(url string) { C.MainWindowUrl(w.addr, C.CString(url)) }
-
+func (w *MainWindow) Thread(thread unsafe.Pointer) { C.MainWindowThread(w.addr, thread) }

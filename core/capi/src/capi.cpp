@@ -178,3 +178,7 @@ void MainWindowNormal(MainWindow_ *w) {
 	reinterpret_cast<MainWindow *>(w)->showNormal();
 	reinterpret_cast<MainWindow *>(w)->setFocus();
 }
+
+void MainWindowThread(MainWindow_ *w, QThread_ *thread) {
+	reinterpret_cast<MainWindow *>(w)->moveToThread(reinterpret_cast<QThread *>(thread));
+}

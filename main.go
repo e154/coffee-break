@@ -3,13 +3,16 @@ package main
 import (
     "./core"
     . "./core/capi"
+	"runtime"
 )
 
 func main() {
 
     NewGuiApplication()
+    core.Run(ApplicationThread())
+	ApplicationExec()
+}
 
-    core.Run()
-
-    ApplicationExec()
+func init() {
+    runtime.LockOSThread()
 }

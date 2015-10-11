@@ -121,9 +121,6 @@ void SystemTray::createTrayIcon() {
 void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(mIconActivatedCallback)
-    	std::cout << "-----------------------------------------------------" << '\n';
-		std::cout << "mIconActivatedCallback: " << mIconActivatedCallback << '\n';
-		std::cout << typeid(reason).name() << '\n';
 		go_callback_int(mIconActivatedCallback, reason);
 }
 
@@ -317,9 +314,6 @@ void SystemTray::setDTimer(int inTime, QAction *action) {
 
 	// call back to go side
 	if(mDtimeCallback)
-		std::cout << "-----------------------------------------------------" << '\n';
-		std::cout << "mDtimeCallback: " << mDtimeCallback << '\n';
-		std::cout << typeid(time).name() << '\n';
 		go_callback_int(mDtimeCallback, time);
 }
 
@@ -354,9 +348,6 @@ void SystemTray::setAlarm(int inState, QAction *action) {
 
 	// call back to go side
 	if(mAlarmCallback)
-		std::cout << "-----------------------------------------------------" << '\n';
-		std::cout << "mAlarmCallback: " << mAlarmCallback << '\n';
-		std::cout << typeid(state).name() << '\n';
 		go_callback_int(mAlarmCallback, state);
 }
 
@@ -391,9 +382,6 @@ void SystemTray::setTimer(int inTime, QAction *action) {
 
 	// call back to go side
 	if(mTimeCallback)
-		std::cout << "-----------------------------------------------------" << '\n';
-		std::cout << "mTimeCallback: " << mTimeCallback << '\n';
-		std::cout << typeid(time).name() << '\n';
 		go_callback_int(mTimeCallback, time);
 }
 
@@ -409,9 +397,5 @@ void SystemTray::setRunAtStartup(int state) {
 
 	// call back to go side
 	if(mRunAtStartupCallback)
-		std::cout << "-----------------------------------------------------" << '\n';
-		std::cout << "mRunAtStartupCallback: " << mRunAtStartupCallback << '\n';
-		std::cout << typeid(mCurrentRunAtStartup).name() << '\n';
-
 		go_callback_int(mRunAtStartupCallback, mCurrentRunAtStartup);
 }
