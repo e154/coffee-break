@@ -4,6 +4,7 @@ import (
     "fmt"
     "os"
     "time"
+    "path/filepath"
 )
 
 const DELAY = 10000;
@@ -11,7 +12,9 @@ const DELAY = 10000;
 func Show(title, body, image string) {
 
     Init("message")
-    msg := NotificationNew(title,body,image)
+
+    dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+    msg := NotificationNew(title,body, dir + "/" + image)
 
     if msg == nil {
         fmt.Fprintf(os.Stderr, "Unable to create a new notification\n")
