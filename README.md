@@ -34,7 +34,12 @@ Coffee Break v1.2
 6) суммарно простоя
 7) обратный отсчёт до разблокировки
 
+matrix
+
 <img src="images/screenshot.png" alt="Coffee Break screenshot" width="630" height="394">
+
+windows bsod screen
+<img src="images/screenshot2.png" alt="Coffee Break screenshot2" width="630" height="394">
 
 #### Сборка из исходников
 
