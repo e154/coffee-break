@@ -182,3 +182,8 @@ void MainWindowNormal(MainWindow_ *w) {
 void MainWindowThread(MainWindow_ *w, QThread_ *thread) {
 	reinterpret_cast<MainWindow *>(w)->moveToThread(reinterpret_cast<QThread *>(thread));
 }
+
+void MainWindowDelete(MainWindow_ *w) {
+	delete reinterpret_cast<MainWindow *>(w);
+}
+

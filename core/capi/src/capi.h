@@ -87,6 +87,7 @@ void MainWindowUrl(MainWindow_ *w, char *url);
 void MainWindowFullScreen(MainWindow_ *w);
 void MainWindowNormal(MainWindow_ *w);
 void MainWindowThread(MainWindow_ *w, QThread_ *thread);
+void MainWindowDelete(MainWindow_ *w);
 
 #ifdef __cplusplus
 } // extern "C"
