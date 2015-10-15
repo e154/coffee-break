@@ -106,7 +106,7 @@ func loop() {
         return
     }
 
-    if watcher.FSM.Current() != "locked" {
+    if watcher.FSM.Current() != "locked" && isWork {
         settings.Work += settings.Tick
         settings.TotalWork += settings.Tick
     }
