@@ -58,6 +58,7 @@ type Settings struct {
     Run_at_startup bool
     Lock time.Duration
     AppVersion string
+	LockScreen string
 }
 
 func (s *Settings) GetHomeDir() (string, error) {
@@ -99,6 +100,7 @@ func (s *Settings) Init() *Settings {
     s.Alarm_file = "static_source/audio/aperture_logo_bells_01_01.wav"
     s.Webserver_address = "127.0.0.1:8078"
     s.AppVersion = APP_VERSION
+    s.LockScreen = "lockbsod"
 
 //    create app conf dir
     fileList, _ := ioutil.ReadDir(s.HomeDir)
@@ -147,6 +149,7 @@ func (s *Settings) Save() (*Settings, error) {
     cfg.Set("alarm_file", s.Alarm_file)
     cfg.Set("webserver_address", s.Webserver_address)
     cfg.Set("app_version", s.AppVersion)
+    cfg.Set("lock_screen", s.LockScreen)
 
     if err := cfg.SaveConfigFile(s.dir + CONF_NAME); err != nil {
         fmt.Printf("err with create conf file: %s\n", s.dir + CONF_NAME)
@@ -195,6 +198,7 @@ func (s *Settings) Load() (*Settings, error) {
     s.Alarm_file = cfg.String("alarm_file")
     s.Webserver_address = cfg.String("webserver_address")
     s.AppVersion = cfg.String("app_version")
+    s.LockScreen = cfg.String("lock_screen")
 
     return s, nil
 }

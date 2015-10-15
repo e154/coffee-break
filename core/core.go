@@ -73,6 +73,7 @@ func (w *Watcher) enterState(e *fsm.Event) {
 }
 
 func (w *Watcher) enterLock(e *fsm.Event) {
+	window.Url(fmt.Sprintf("http://%s/%s", settings.Webserver_address, settings.LockScreen))
     window.FullScreen()
     systray.SetIcon(LOCK_ICON)
 }
@@ -106,9 +107,13 @@ func loop() {
         return
     }
 
-    if watcher.FSM.Current() != "locked" && isWork {
-        settings.Work += settings.Tick
-        settings.TotalWork += settings.Tick
+    if watcher.FSM.Current() != "locked" {
+		if isWork {
+			settings.Work += settings.Tick
+			settings.TotalWork += settings.Tick
+		} else {
+			settings.TotalIdle += settings.Tick
+		}
     }
 
     switch watcher.FSM.Current() {
@@ -354,7 +359,7 @@ func windowInit(thread unsafe.Pointer) {
 
     window = api.GetMainWindow()
 	window.Thread(thread)
-    window.Url(fmt.Sprintf("http://%s/lock", settings.Webserver_address))
+	window.Url(fmt.Sprintf("http://%s/%s", settings.Webserver_address, settings.LockScreen))
 }
 
 func errHandler(err error) {

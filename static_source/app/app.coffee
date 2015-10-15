@@ -22,7 +22,8 @@ angular.module('app')
       .when '/',              'base.dashboard'
       .when '/settings',      'base.settings'
       .when '/about',         'base.about'
-      .when '/lock',          'lock'
+      .when '/lockmatrix',    'lockmatrix'
+      .when '/lockbsod',      'lockbsod'
 
       .segment 'base',
         templateUrl: '/templates/base.html'
@@ -43,8 +44,12 @@ angular.module('app')
           controller: 'aboutCtrl as about'
 
       .up()
-      .segment 'lock',
-        templateUrl: '/templates/lock.html'
+      .segment 'lockmatrix',
+        templateUrl: '/templates/lockmatrix.html'
+        controller: 'lockCtrl as lock'
+
+      .segment 'lockbsod',
+        templateUrl: '/templates/lockbsod.html'
         controller: 'lockCtrl as lock'
 
     $locationProvider.html5Mode
