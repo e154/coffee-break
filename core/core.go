@@ -36,6 +36,7 @@ var (
 	IconActivatedCallbackFunc = IconActivatedCallback
 	RunAtStartupCallbackFunc = RunAtStartupCallback
 	AlarmCallbackFunc = AlarmCallback
+	LockScreenCallbackFunc = LockScreenCallback
 )
 
 type Watcher struct {
@@ -73,7 +74,7 @@ func (w *Watcher) enterState(e *fsm.Event) {
 }
 
 func (w *Watcher) enterLock(e *fsm.Event) {
-	window.Url(fmt.Sprintf("http://%s/%s", settings.Webserver_address, settings.LockScreen))
+	windowUrl()
     window.FullScreen()
     systray.SetIcon(LOCK_ICON)
 }
@@ -189,6 +190,7 @@ func systrayInit(thread unsafe.Pointer) {
     systray.SetIconActivatedCallback(unsafe.Pointer(&IconActivatedCallbackFunc))
     systray.SetRunAtStartupCallback(unsafe.Pointer(&RunAtStartupCallbackFunc))
     systray.SetAlarmCallback(unsafe.Pointer(&AlarmCallbackFunc))
+    systray.SetLockScreenCallback(unsafe.Pointer(&LockScreenCallbackFunc))
 
     systray.SetVisible(true)
 
@@ -211,6 +213,12 @@ func systrayInit(thread unsafe.Pointer) {
         systray.SetAlarm(3)
         systray.SetAlarmInfo("Alarm is off")
     }
+
+	if settings.LockScreen < 1 {
+		settings.LockScreen = 1
+	}
+
+	systray.SetLockScreen(settings.LockScreen)
 }
 
 func playerInit() {
@@ -292,6 +300,11 @@ func AlarmCallback(x C.int) {
     settings.Save()
 }
 
+func LockScreenCallback(x C.int) {
+	settings.LockScreen = int(x)
+	settings.Save()
+}
+
 func strConverter(in string) (out string) {
 
     out = strings.Replace(in, "{idle_time}", fmt.Sprintf("%v", settings.Idle), -1)
@@ -359,7 +372,23 @@ func windowInit(thread unsafe.Pointer) {
 
     window = api.GetMainWindow()
 	window.Thread(thread)
-	window.Url(fmt.Sprintf("http://%s/%s", settings.Webserver_address, settings.LockScreen))
+	windowUrl()
+}
+
+func windowUrl() {
+
+	var lock string
+	switch settings.LockScreen {
+	case 1:
+		lock = "lockmatrix"
+	case 2:
+		lock = "lockbsod"
+	case 3:
+		lock = "lockide"
+	default:
+		lock = "lockmatrix"
+	}
+	window.Url(fmt.Sprintf("http://%s/%s", settings.Webserver_address, lock))
 }
 
 func errHandler(err error) {

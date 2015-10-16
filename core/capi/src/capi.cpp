@@ -189,8 +189,8 @@ void MainWindowDelete(MainWindow_ *w) {
 
 // lock screen
 // ----------------------------------------------------------------------------
-void SetLockScreen(SystemTray_ *t, int screen) {
-	reinterpret_cast<SystemTray *>(t)->setLockScreen(screen, 0);
+void SetLockScreen(SystemTray_ *t, int state) {
+	reinterpret_cast<SystemTray *>(t)->setLockScreen(state, 0);
 }
 
 int GetLockScreen(SystemTray_ *t) {

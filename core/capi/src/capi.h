@@ -78,7 +78,7 @@ void SetAlarmInfo(SystemTray_*, char *time);
 char *GetAlarmInfo(SystemTray_*);
 
 // lock screen
-void SetLockScreen(SystemTray_*, int *screen);
+void SetLockScreen(SystemTray_*, int screen);
 int GetLockScreen(SystemTray_*);
 void SetLockScreenCallback(SystemTray_*, void*);
 
