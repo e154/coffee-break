@@ -71,8 +71,9 @@ go get github.com/astaxie/beego/config
 go get github.com/gorilla/websocket
 go get github.com/c9s/goprocinfo/linux
 go get github.com/looplab/fsm
+go get github.com/mattn/go-gtk/glib
 
-apt-get install libopenal-dev libnotify-dev libxss-dev md5deep
+apt-get install libopenal-dev libnotify-dev libxss-dev md5deep libglib2.0-dev
 ```
 
 #### LICENSE
