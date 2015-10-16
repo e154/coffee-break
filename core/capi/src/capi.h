@@ -77,6 +77,11 @@ void SetRunAtStartupCallback(SystemTray_*, void*);
 void SetAlarmInfo(SystemTray_*, char *time);
 char *GetAlarmInfo(SystemTray_*);
 
+// lock screen
+void SetLockScreen(SystemTray_*, int *screen);
+int GetLockScreen(SystemTray_*);
+void SetLockScreenCallback(SystemTray_*, void*);
+
 void SetIconActivatedCallback(SystemTray_*, void*);
 
 // MainWindow

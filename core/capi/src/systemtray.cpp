@@ -49,6 +49,7 @@ SystemTray::SystemTray():
 		mMainMenu(0),
 		mAlarmMenu(0),
 		mDefaultTimerMenu(0),
+		mLockScreenMenu(0),
 
 		mainLayout(0),
 		exitAction(0),
@@ -85,6 +86,14 @@ SystemTray::SystemTray():
 		alarmAction1(0),
 		alarmAction2(0),
 		alarmAction3(0),
+
+		mTimeCallback(0),
+		mDtimeCallback(0),
+		mAlarmCallback(0),
+		mRunAtStartupCallback(0),
+		mIconActivatedCallback(0),
+		mLockScreenCallback(0),
+
 		mCurrentTimeLimit(0)
 {
 	init();
@@ -118,8 +127,7 @@ void SystemTray::createTrayIcon() {
 	mTrayIcon->setContextMenu(mMainMenu);
 }
 
-void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
+void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     if(mIconActivatedCallback)
 		go_callback_int(mIconActivatedCallback, reason);
 }
@@ -135,6 +143,7 @@ void SystemTray::trayAboutToShow() {
 	mMainMenu->addAction(runAtStartUpAction);
 	mDefaultTimerMenu = mMainMenu->addMenu(tr("&Default timer"));
 	mAlarmMenu = mMainMenu->addMenu(tr("&Alarm sound"));
+	mLockScreenMenu = mMainMenu->addMenu(tr("&Lock screen"));
 //	mMainMenu->addAction(helpAction);
 
 	mMainMenu->addSeparator();
@@ -170,6 +179,10 @@ void SystemTray::trayAboutToShow() {
 //	mAlarmMenu->addAction(alarmAction2);
 	mAlarmMenu->addAction(alarmAction3);
 
+	// lock screen
+	mLockScreenMenu->addAction(lockMatrixAction);
+	mLockScreenMenu->addAction(lockWinBsodAction);
+	mLockScreenMenu->addAction(lockIdeAction);
 }
 
 void SystemTray::createActions() {
@@ -281,6 +294,20 @@ void SystemTray::createActions() {
 	connect(time15mAction, SIGNAL(triggered()), this, SLOT(set15mTime()));
 	connect(time10mAction, SIGNAL(triggered()), this, SLOT(set10mTime()));
 	connect(time5mAction, SIGNAL(triggered()), this, SLOT(set5mTime()));
+
+	// lock screen
+	lockMatrixAction = new QAction(tr("&Matrix"), this);
+	lockWinBsodAction = new QAction(tr("&Windows bsod"), this);
+	lockIdeAction = new QAction(tr("JetBrains"), this);
+
+	mLockScreenStates.insert( std::pair<int, QAction*>(1,lockMatrixAction) );
+	mLockScreenStates.insert( std::pair<int, QAction*>(2,lockWinBsodAction) );
+	mLockScreenStates.insert( std::pair<int, QAction*>(3,lockIdeAction) );
+
+	connect(lockMatrixAction, SIGNAL(triggered()), this, SLOT(setMatrixScreen()));
+	connect(lockWinBsodAction, SIGNAL(triggered()), this, SLOT(setWinBsodScreen()));
+	connect(lockIdeAction, SIGNAL(triggered()), this, SLOT(setIdeScreen()));
+
 }
 
 void SystemTray::setDTimer(int inTime, QAction *action) {
@@ -398,4 +425,38 @@ void SystemTray::setRunAtStartup(int state) {
 	// call back to go side
 	if(mRunAtStartupCallback)
 		go_callback_int(mRunAtStartupCallback, mCurrentRunAtStartup);
+}
+
+void SystemTray::setLockScreen(int inState, QAction *action) {
+
+	int state = 0;
+	if ( !mLockScreenStates.empty() ) {
+		actionStates::iterator it = mLockScreenStates.begin();
+		while ( it != mLockScreenStates.end()){
+
+			if (
+					(inState == 0 && action != 0x0 && it->second != action) ||
+					(inState != 0 && action == 0x0 && it->first != inState)
+					)
+			{
+				it->second->setDisabled(false);
+				it->second->setChecked(false);
+				it->second->setCheckable(false);
+
+			} else {
+
+				it->second->setDisabled(true);
+				it->second->setCheckable(true);
+				it->second->setChecked(true);
+				state = it->first;
+			}
+			++it;
+		}
+	}
+
+	mCurrentLockScreen = (inState == 0) ? state : inState;
+
+	// call back to go side
+	if(mLockScreenCallback)
+		go_callback_int(mLockScreenCallback, state);
 }

@@ -45,6 +45,7 @@ private:
 	QMenu *mMainMenu;
 	QMenu *mAlarmMenu;
 	QMenu *mDefaultTimerMenu;
+	QMenu *mLockScreenMenu;
 
 	QGridLayout *mainLayout;
 	QAction *exitAction;
@@ -84,6 +85,10 @@ private:
 	QAction *alarmAction2;
 	QAction *alarmAction3;
 
+	QAction *lockMatrixAction;
+	QAction *lockWinBsodAction;
+	QAction *lockIdeAction;
+
 public:
 	SystemTray();
 
@@ -120,6 +125,13 @@ public:
 	int getAlarm() { return mCurrentAlarm; }
 	void setAlarmCallback(void* callback) {
 		mAlarmCallback = callback;
+	}
+
+	// Lock screen
+	void setLockScreen(int inState, QAction *action);
+	int getLockScreen() { return mCurrentLockScreen; }
+	void setLockScreenCallback(void* callback) {
+		mLockScreenCallback = callback;
 	}
 
 	// run at startup
@@ -177,6 +189,11 @@ private slots:
 //	inline void setAlarm2() { setAlarm(0, alarmAction2); }
 	inline void setAlarm3() { setAlarm(0, alarmAction3); }
 
+	// lock screen
+	inline void setMatrixScreen() { setLockScreen(0, lockMatrixAction); }
+	inline void setWinBsodScreen() { setLockScreen(0, lockWinBsodAction); }
+	inline void setIdeScreen() { setLockScreen(0, lockIdeAction); }
+
 	inline void setRunAtStartup1() {
 
 		int state = (runAtStartUpAction->isChecked())?1:0;
@@ -195,13 +212,16 @@ protected:
 	void* mAlarmCallback;
 	void* mRunAtStartupCallback;
 	void* mIconActivatedCallback;
+	void* mLockScreenCallback;
 	actionStates mTimeStates;
 	actionStates mDtimeStates;
 	actionStates mAlarmStates;
+	actionStates mLockScreenStates;
 	int mCurrentTimeLimit;
 	int mCurrentDefaultTime;
 	int mCurrentAlarm;
 	int mCurrentRunAtStartup;
+	int mCurrentLockScreen;
 
 };
 
