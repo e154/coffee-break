@@ -17,6 +17,31 @@
     "angular-route": "~1.4.3",
     "angular-route-segment": "~1.5.0",
     "angular-resource": "~1.4.3",
-    "ngSocket": "~0.2.1"
+    "ngSocket": "~0.2.1",
+    "angular-ui-codemirror": "~0.3.0",
+    "jquery": "~2.1.4",
+    "typetype": "iamdanfox/typetype#~0.1.2",
+    "codemirror": "*"
+  },
+  "overrides": {
+    "jquery": {
+      "main": [
+        "dist/jquery.min.js"
+      ]
+    },
+    "codemirror": {
+      "main": [
+        "lib/codemirror.js",
+        "lib/codemirror.css",
+        "theme/zenburn.css",
+        "mode/clike/clike.js",
+        "mode/javascript/javascript.js"
+      ]
+    },
+    "typetype": {
+      "main": [
+        "jquery.typetype.js"
+      ]
+    }
   }
 }

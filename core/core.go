@@ -388,7 +388,9 @@ func windowUrl() {
 	default:
 		lock = "lockmatrix"
 	}
-	window.Url(fmt.Sprintf("http://%s/%s", settings.Webserver_address, lock))
+    url := fmt.Sprintf("http://%s/%s", settings.Webserver_address, lock)
+    fmt.Println("set url: ", url)
+	window.Url(url)
 }
 
 func errHandler(err error) {

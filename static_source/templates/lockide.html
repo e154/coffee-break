@@ -1,0 +1,20 @@
+<div class="ide">
+
+    <textarea ng-show="false" typetype text="lock.ide_text" options="lock.options" ng-model="ide_text_type"></textarea>
+
+    <div style="position: absolute;left: 138px;top: 0;right: 0;height: 27px;background-image: url('/images/ide/2.jpg')"></div>
+    <img style="position: absolute;left: 0;top: 0;" src="/images/ide/3.jpg" width="21px" height="305px">
+    <img style="position: absolute;left: 21px;top: 0;" src="/images/ide/1.jpg" width="117px" height="27px">
+
+    <div style="position: absolute;left: 0;top: 305px;bottom: 106px;width: 21px; background-image: url('/images/ide/4.jpg')"></div>
+    <img style="position: absolute;left: 0;bottom: 0;" src="/images/ide/5.jpg" width="21px" height="106px">
+
+    <div style="position: absolute;left: 523px;right: 225px;bottom: 0;height: 44px; background-image: url('/images/ide/8.jpg')"></div>
+    <img style="position: absolute;left: 21px;bottom: 0;" src="/images/ide/6.jpg" width="523px" height="44px">
+    <img style="position: absolute;right: 0;bottom: 0;" src="/images/ide/7.jpg" width="425px" height="44px">
+
+    <div autoscroll class="ide-wrap">
+        <ui-codemirror ui-codemirror-opts="{ lineWrapping:true,lineNumbers:true,mode:'clike',theme:'zenburn'}" ng-model="ide_text_type.val" class="height-auto"></ui-codemirror>
+    </div>
+
+</div>

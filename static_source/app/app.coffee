@@ -13,6 +13,7 @@ app = angular
     'route-segment'
     'view-segment'
     'ngSocket'
+    'ui.codemirror'
   ])
 
 angular.module('app')
@@ -24,6 +25,7 @@ angular.module('app')
       .when '/about',         'base.about'
       .when '/lockmatrix',    'lockmatrix'
       .when '/lockbsod',      'lockbsod'
+      .when '/lockide',       'lockide'
 
       .segment 'base',
         templateUrl: '/templates/base.html'
@@ -51,6 +53,11 @@ angular.module('app')
       .segment 'lockbsod',
         templateUrl: '/templates/lockbsod.html'
         controller: 'lockCtrl as lock'
+
+      .segment 'lockide',
+        templateUrl: '/templates/lockide.html'
+        controller: 'lockCtrl as lock'
+
 
     $locationProvider.html5Mode
       enabled: true
