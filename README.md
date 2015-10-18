@@ -1,4 +1,4 @@
-Coffee Break v1.2
+Coffee Break v1
 ------------
 
 Эта небольшая программа позволяет установить таймер, который предупредит Вас, чтобы сделать перерыв 10 минут.
@@ -26,20 +26,26 @@ Coffee Break v1.2
 <img src="images/menu.jpg" alt="Coffee Break icon paused" width="630" height="358">
 
 Экран блокировки, включающий следующую информацию:
-1) суммарно работы рабочей станции
-2) суммарно простоя рабочей станции
-3) суммарно блокировки
-4) блокировки
-5) суммарно работы
-6) суммарно простоя
-7) обратный отсчёт до разблокировки
+    1) суммарно работы рабочей станции
+    2) суммарно простоя рабочей станции
+    3) суммарно блокировки
+    4) блокировки
+    5) суммарно работы
+    6) суммарно простоя
+    7) обратный отсчёт до разблокировки
 
 matrix
 
 <img src="images/screenshot.png" alt="Coffee Break screenshot" width="630" height="394">
 
 windows bsod screen
+
 <img src="images/screenshot2.png" alt="Coffee Break screenshot2" width="630" height="394">
+
+ide work simulate
+
+<img src="images/screenshot3.png" alt="Coffee Break screenshot3" width="630" height="394">
+
 
 #### Сборка из исходников
 
