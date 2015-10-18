@@ -246,6 +246,8 @@ angular
     vm.options =
       e: 0.04,
       t: 100
+    vm.ide_callback = ()->
+      console.log 'callback'
 
     $scope.ide_text_type = ""
     port = document.location.port

@@ -9,6 +9,7 @@ angular
       text: "="
       options: "="
       ngModel: "="
+      callback: "="
     }
     link: ($scope, $element, $attrs)=>
 
@@ -18,7 +19,7 @@ angular
         keypress: ()->
           update()
         callback: ()->
-          update()
+          $scope.callback()
 
       update = ()->
         $timeout ()->
