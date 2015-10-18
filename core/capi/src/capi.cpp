@@ -187,6 +187,10 @@ void MainWindowDelete(MainWindow_ *w) {
 	delete reinterpret_cast<MainWindow *>(w);
 }
 
+void MainWindowReload(MainWindow_ *w) {
+	reinterpret_cast<MainWindow *>(w)->reload();
+}
+
 // lock screen
 // ----------------------------------------------------------------------------
 void SetLockScreen(SystemTray_ *t, int state) {

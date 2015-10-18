@@ -93,6 +93,7 @@ void MainWindowFullScreen(MainWindow_ *w);
 void MainWindowNormal(MainWindow_ *w);
 void MainWindowThread(MainWindow_ *w, QThread_ *thread);
 void MainWindowDelete(MainWindow_ *w);
+void MainWindowReload(MainWindow_ *w);
 
 #ifdef __cplusplus
 } // extern "C"
