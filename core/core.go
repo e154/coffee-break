@@ -37,6 +37,7 @@ var (
 	RunAtStartupCallbackFunc = RunAtStartupCallback
 	AlarmCallbackFunc = AlarmCallback
 	LockScreenCallbackFunc = LockScreenCallback
+	idleTmpBuf time.Duration
 )
 
 type Watcher struct {
@@ -120,6 +121,7 @@ func loop() {
     switch watcher.FSM.Current() {
         case "worked":
             if isWork {
+				idleTmpBuf = 0
                 if settings.Work >= (settings.WorkConst - 5 * time.Minute) {
                     err := watcher.FSM.Event("work_lock")
                     errHandler(err)
@@ -127,6 +129,13 @@ func loop() {
                     err := watcher.FSM.Event("work_warning_lock")
                     errHandler(err)
                 }
+            } else {
+				if idleTmpBuf >= settings.LockConst {
+					settings.Work = 0
+					idleTmpBuf = 0
+				} else {
+					idleTmpBuf += settings.Tick
+				}
             }
 
         case "work_locked":
