@@ -30,7 +30,7 @@ var (
     settings *st.Settings
     systray api.SystemTray
     player *audio.Player
-    window api.MainWindow
+    window *api.MainWindow
     TimeCallbackFunc = TimeCallback
 	DTimeCallbackFunc = DTimeCallback
 	IconActivatedCallbackFunc = IconActivatedCallback
@@ -303,6 +303,7 @@ func AlarmCallback(x C.int) {
 func LockScreenCallback(x C.int) {
 	settings.LockScreen = int(x)
 	settings.Save()
+    windowUrl()
 }
 
 func strConverter(in string) (out string) {
@@ -371,8 +372,8 @@ func fsmInit() {
 func windowInit(thread unsafe.Pointer) {
 
     window = api.GetMainWindow()
-	window.Thread(thread)
-	windowUrl()
+    window.Thread(thread)
+    windowUrl()
 }
 
 func windowUrl() {
@@ -388,9 +389,12 @@ func windowUrl() {
 	default:
 		lock = "lockmatrix"
 	}
-    url := fmt.Sprintf("http://%s/%s", settings.Webserver_address, lock)
-    fmt.Println("set url: ", url)
-	window.Url(url)
+
+    if window != nil {
+        url := fmt.Sprintf("http://%s/%s", settings.Webserver_address, lock)
+        fmt.Println("window set url: ", url)
+        window.Url(url)
+    }
 }
 
 func errHandler(err error) {

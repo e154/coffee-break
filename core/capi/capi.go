@@ -73,8 +73,8 @@ type MainWindow struct {
     addr unsafe.Pointer
 }
 
-func GetMainWindow() MainWindow {
-    var instance MainWindow
+func GetMainWindow() *MainWindow {
+    instance := new(MainWindow)
     instance.addr = C.GetMainWindow()
     return instance
 }
