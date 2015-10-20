@@ -1,7 +1,7 @@
 DIR=build
 PKG_ROOT=opt/coffeebreak
 PKG_NAME=coffeebreak
-VERSION=1.2.0
+VERSION=1.3.0
 
 all: debian
 
