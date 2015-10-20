@@ -43,14 +43,14 @@ type Watcher struct {
     FSM *fsm.FSM
 }
 
-func (w *Watcher) enterPause(e *fsm.Event) {
+func (w *Watcher) enterStop(e *fsm.Event) {
     systray.SetIcon(PAUSE_ICON)
-    settings.Paused = true
+    settings.Stoped = true
 }
 
-func (w *Watcher) leavePause(e *fsm.Event) {
+func (w *Watcher) leaveStop(e *fsm.Event) {
     systray.SetIcon(WORK_ICON)
-    settings.Paused = false
+    settings.Stoped = false
     settings.Work = 0
 }
 
@@ -104,7 +104,7 @@ func loop() {
     isWork = settings.Idle < time.Second
 //    protected := settings.Idle < settings.Protect
 
-    if settings.Paused {
+    if settings.Stoped {
         return
     }
 
@@ -139,6 +139,8 @@ func loop() {
 				systray.SetIcon(PAUSE_ICON)
             }
 
+		case "paused":
+
         case "work_locked":
             if settings.Work < (settings.WorkConst - 5 * time.Minute) {
                 err := watcher.FSM.Event("work")
@@ -157,9 +159,6 @@ func loop() {
                 errHandler(err)
             }
 
-        case "paused":
-
-
         case "locked":
             settings.Lock += settings.Tick
             settings.TotalIdle += settings.Tick
@@ -168,6 +167,8 @@ func loop() {
                 err := watcher.FSM.Event("work")
                 errHandler(err)
             }
+
+		case "stoped":
 
     }
 
@@ -274,8 +275,8 @@ func IconActivatedCallback(x C.int) {
 
     switch int(x) {
         case DoubleClick:
-            if watcher.FSM.Current() != "paused" {
-                err := watcher.FSM.Event("pause")
+            if watcher.FSM.Current() != "stoped" {
+                err := watcher.FSM.Event("stop")
                 errHandler(err)
             } else {
                 err := watcher.FSM.Event("work")
@@ -344,10 +345,10 @@ func fsmInit() {
     watcher = new(Watcher)
 
     watcher.FSM = fsm.NewFSM(
-    "paused",
+    "stoped",
     fsm.Events{
         // Рабочее состояние, до момента "Х" более 5 минут
-        {Name: "work", Src: []string{"paused", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
+        {Name: "work", Src: []string{"stoped", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
 
         // Рабочее состояние, до момента "Х" менее 5 минут
         {Name: "work_lock", Src: []string{"worked", "locked"}, Dst: "work_locked"},
@@ -359,11 +360,11 @@ func fsmInit() {
         {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
 
         // Пауза, все процессы остановлены
-        {Name: "pause", Src: []string{"worked", "work_locked", "locked", "work_warning_locked"}, Dst: "paused"},
+        {Name: "stop", Src: []string{"worked", "work_locked", "locked", "work_warning_locked"}, Dst: "stoped"},
     },
     fsm.Callbacks{
-        "enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
-        "leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
+        "enter_stoped": func(e *fsm.Event) { watcher.enterStop(e) },
+        "leave_stoped": func(e *fsm.Event) { watcher.leaveStop(e) },
         "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
         "enter_worked": func(e *fsm.Event) { watcher.enterWork(e) },
         "enter_work_locked": func(e *fsm.Event) { watcher.enterWorkLock(e) },

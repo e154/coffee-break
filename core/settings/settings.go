@@ -16,7 +16,7 @@ import (
 const (
     CONF_NAME string = "app.conf"
     APP_NAME string = "coffeebreak"
-    APP_VERSION = "1.3.0"
+    APP_VERSION = "1.3.1"
     permMode os.FileMode = 0666
 )
 
@@ -47,6 +47,7 @@ type Settings struct {
     Last_stage string
     Ready bool
     Paused bool
+    Stoped bool
     SoundEnabled bool
     RunAtStartup bool
     Message_title string
@@ -88,6 +89,7 @@ func (s *Settings) Init() *Settings {
     s.dir = fmt.Sprintf("%s/.%s/", s.HomeDir, APP_NAME)
 
     s.Paused = false
+    s.Stoped = false
     s.SoundEnabled = true
     s.RunAtStartup = true
     s.WorkConst = 2700 * time.Second // 45min
@@ -138,6 +140,7 @@ func (s *Settings) Save() (*Settings, error) {
     }
 
     cfg.Set("paused", fmt.Sprintf("%t", s.Paused))
+    cfg.Set("stoped", fmt.Sprintf("%t", s.Stoped))
     cfg.Set("run_at_startup", fmt.Sprintf("%t", s.RunAtStartup))
     cfg.Set("sound_enabled", fmt.Sprintf("%t", s.SoundEnabled))
     cfg.Set("lock", fmt.Sprintf("%v", s.LockConst.Seconds()))
@@ -189,6 +192,7 @@ func (s *Settings) Load() (*Settings, error) {
     s.SoundEnabled, _ = cfg.Bool("sound_enabled")
     s.RunAtStartup, _ = cfg.Bool("run_at_startup")
     s.Paused, _ = cfg.Bool("paused")
+    s.Stoped, _ = cfg.Bool("stoped")
     s.LockConst = second("lock")
     s.WorkConst = second("work")
     s.Protect = second("protect")
