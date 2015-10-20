@@ -43,6 +43,14 @@ type Watcher struct {
     FSM *fsm.FSM
 }
 
+func (w *Watcher) enterPause(e *fsm.Event) {
+	systray.SetIcon(PAUSE_ICON)
+}
+
+func (w *Watcher) leavePause(e *fsm.Event) {
+	systray.SetIcon(WORK_ICON)
+}
+
 func (w *Watcher) enterStop(e *fsm.Event) {
     systray.SetIcon(PAUSE_ICON)
     settings.Stoped = true
@@ -119,27 +127,32 @@ func loop() {
 
     switch watcher.FSM.Current() {
         case "worked":
-            if isWork {
-                if settings.Work >= (settings.WorkConst - 5 * time.Minute) {
-                    err := watcher.FSM.Event("work_lock")
-                    errHandler(err)
-                } else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
-                    err := watcher.FSM.Event("work_warning_lock")
-                    errHandler(err)
-                }
-				systray.SetIcon(WORK_ICON)
-            } else {
-//				Зафиксирован простой
-//				Во время простоя рабочее время в секунду уменьшаетя на один Tick
-				if settings.Work >= settings.Tick {
-					settings.Work -= settings.Tick
-				} else {
-					settings.Work = 0
-				}
-				systray.SetIcon(PAUSE_ICON)
-            }
+			if !isWork {
+				err := watcher.FSM.Event("pause")
+				errHandler(err)
+			}
+
+			if settings.Work >= (settings.WorkConst - 5 * time.Minute) {
+				err := watcher.FSM.Event("work_lock")
+				errHandler(err)
+			} else if settings.Work >= (settings.WorkConst - 1 * time.Minute) {
+				err := watcher.FSM.Event("work_warning_lock")
+				errHandler(err)
+			}
 
 		case "paused":
+			if isWork {
+				err := watcher.FSM.Event("work")
+				errHandler(err)
+			}
+
+//			Зафиксирован простой
+//			Во время простоя рабочее время уменьшается
+			if settings.Work >= settings.Tick {
+				settings.Work -= settings.Tick
+			} else {
+				settings.Work = 0
+			}
 
         case "work_locked":
             if settings.Work < (settings.WorkConst - 5 * time.Minute) {
@@ -347,8 +360,11 @@ func fsmInit() {
     watcher.FSM = fsm.NewFSM(
     "stoped",
     fsm.Events{
+		// Пауза, сюда можо попасть только из рабочего состояния
+		{Name: "pause", Src: []string{"worked"}, Dst: "paused"},
+
         // Рабочее состояние, до момента "Х" более 5 минут
-        {Name: "work", Src: []string{"stoped", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
+        {Name: "work", Src: []string{"paused", "stoped", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
 
         // Рабочее состояние, до момента "Х" менее 5 минут
         {Name: "work_lock", Src: []string{"worked", "locked"}, Dst: "work_locked"},
@@ -360,9 +376,11 @@ func fsmInit() {
         {Name: "lock", Src: []string{"work_warning_locked"}, Dst: "locked"},
 
         // Пауза, все процессы остановлены
-        {Name: "stop", Src: []string{"worked", "work_locked", "locked", "work_warning_locked"}, Dst: "stoped"},
+        {Name: "stop", Src: []string{"worked", "work_locked", "locked", "work_warning_locked", "paused"}, Dst: "stoped"},
     },
     fsm.Callbacks{
+		"enter_paused": func(e *fsm.Event) { watcher.enterPause(e) },
+		"leave_paused": func(e *fsm.Event) { watcher.leavePause(e) },
         "enter_stoped": func(e *fsm.Event) { watcher.enterStop(e) },
         "leave_stoped": func(e *fsm.Event) { watcher.leaveStop(e) },
         "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
