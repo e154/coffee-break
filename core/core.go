@@ -63,13 +63,16 @@ func (w *Watcher) leaveStop(e *fsm.Event) {
 }
 
 func (w *Watcher) enterWork(e *fsm.Event) {
-    settings.Work = 0
     systray.SetIcon(WORK_ICON)
 }
 
 func (w *Watcher) enterWorkLock(e *fsm.Event) {
     systray.SetIcon(LOCK_ICON)
     showNotify()
+}
+
+func (w *Watcher) leaveWorkLock(e *fsm.Event) {
+	settings.Work = 0
 }
 
 func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
@@ -386,6 +389,7 @@ func fsmInit() {
         "enter_state": func(e *fsm.Event) { watcher.enterState(e) },
         "enter_worked": func(e *fsm.Event) { watcher.enterWork(e) },
         "enter_work_locked": func(e *fsm.Event) { watcher.enterWorkLock(e) },
+        "leave_work_locked": func(e *fsm.Event) { watcher.leaveWorkLock(e) },
         "enter_work_warning_locked": func(e *fsm.Event) { watcher.enterWorkWarningLock(e) },
         "enter_locked": func(e *fsm.Event) { watcher.enterLock(e) },
         "leave_locked": func(e *fsm.Event) { watcher.leaveLock(e) },
