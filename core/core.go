@@ -72,7 +72,7 @@ func (w *Watcher) enterWorkLock(e *fsm.Event) {
 }
 
 func (w *Watcher) leaveWorkLock(e *fsm.Event) {
-	settings.Work = 0
+
 }
 
 func (w *Watcher) enterWorkWarningLock(e *fsm.Event) {
@@ -128,6 +128,16 @@ func loop() {
 		}
     }
 
+	timeReducing := func() {
+//			Зафиксирован простой
+//			Во время простоя рабочее время уменьшается
+		if settings.Work >= settings.Tick {
+			settings.Work -= settings.Tick
+		} else {
+			settings.Work = 0
+		}
+	}
+
     switch watcher.FSM.Current() {
         case "worked":
 			if !isWork {
@@ -149,13 +159,7 @@ func loop() {
 				errHandler(err)
 			}
 
-//			Зафиксирован простой
-//			Во время простоя рабочее время уменьшается
-			if settings.Work >= settings.Tick {
-				settings.Work -= settings.Tick
-			} else {
-				settings.Work = 0
-			}
+			timeReducing()
 
         case "work_locked":
             if settings.Work < (settings.WorkConst - 5 * time.Minute) {
@@ -166,14 +170,22 @@ func loop() {
                 errHandler(err)
             }
 
+			if !isWork {
+				timeReducing()
+			}
+
         case "work_warning_locked":
             if settings.Work <= (settings.WorkConst - 1 * time.Minute) {
-                err := watcher.FSM.Event("work_locked")
+                err := watcher.FSM.Event("work_lock")
                 errHandler(err)
             } else if settings.Work >= (settings.WorkConst) {
                 err := watcher.FSM.Event("lock")
                 errHandler(err)
             }
+
+			if !isWork {
+				timeReducing()
+			}
 
         case "locked":
             settings.Lock += settings.Tick
@@ -370,7 +382,7 @@ func fsmInit() {
         {Name: "work", Src: []string{"paused", "stoped", "work_locked", "work_warning_locked", "locked"}, Dst: "worked"},
 
         // Рабочее состояние, до момента "Х" менее 5 минут
-        {Name: "work_lock", Src: []string{"worked", "locked"}, Dst: "work_locked"},
+        {Name: "work_lock", Src: []string{"worked", "locked", "work_warning_locked"}, Dst: "work_locked"},
 
         // Рабочее состояние, до момента "Х" менее 1 минут
         {Name: "work_warning_lock", Src: []string{"work_locked", "locked"}, Dst: "work_warning_locked"},
